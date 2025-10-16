@@ -70,9 +70,9 @@ const Hero = () => {
           <div className="relative animate-scale-in">
             <div className="absolute -inset-4 bg-gradient-to-r from-primary/20 to-accent/20 rounded-3xl blur-2xl" />
             <div 
-              className="relative rounded-3xl shadow-[var(--shadow-soft)] w-full h-auto bg-gradient-to-br from-primary/20 to-secondary/20 aspect-video flex items-center justify-center"
+              className="relative rounded-3xl shadow-[var(--shadow-soft)] w-full h-auto bg-gradient-to-br from-primary/20 to-secondary/20 aspect-video flex items-center justify-center bg-cover bg-center"
+              style={{ backgroundImage: `url('https://media.istockphoto.com/id/806276128/photo/farmer-ploughing-rice-field-at-sunrise.jpg?s=612x612&w=0&k=20&c=t5IUOH9GWrI1lAz4gXPJnwjR9WUxQxdmSnIJxk_XDiQ=')` }}
             >
-              <span className="text-muted-foreground text-lg">{t("Hero Image Placeholder")}</span>
             </div>
             
             {/* Floating Elements */}

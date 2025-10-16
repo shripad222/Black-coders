@@ -4,6 +4,7 @@ import { Menu } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import { LanguageSelector } from "./LanguageSelector";
+import { ThemeToggle } from "./ThemeToggle";
 import { useLanguage } from "@/contexts/LanguageContext";
 
 const Header = () => {
@@ -75,6 +76,7 @@ const Header = () => {
             </>
           )}
           <LanguageSelector />
+          <ThemeToggle />
 
           {/* Mobile Menu */}
           <Sheet>

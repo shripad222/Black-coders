@@ -66,7 +66,7 @@ export function AppSidebar() {
           </div>
           <div>
             <h2 className="font-heading text-lg font-semibold text-sidebar-foreground">
-              AgriConnect
+              AgriMandi
             </h2>
             <p className="text-xs text-muted-foreground">Market Intelligence</p>
           </div>
