@@ -18,7 +18,18 @@ LANG_MAP = {
     "gu": "guj_Gujr",   # Gujarati
     "kn": "kan_Knda",   # Kannada
     "pa": "pan_Guru",   # Punjabi
-    "or": "ory_Orya"    # Odia
+    "or": "ory_Orya",   # Odia
+    "as": "asm_Beng",   # Assamese
+    "brx": "brx_Deva",  # Bodo
+    "doi": "doi_Deva",  # Dogri
+    "ks": "kas_Arab",   # Kashmiri (Arabic)
+    "mai": "mai_Deva",  # Maithili
+    "mni": "mni_Beng",  # Manipuri (Meitei)
+    "ne": "npi_Deva",   # Nepali
+    "sa": "san_Deva",   # Sanskrit
+    "sat": "sat_Olck",  # Santali
+    "sd": "snd_Arab",   # Sindhi
+    "ur": "urd_Arab"    # Urdu
 }
 
 SUPPORTED_LANGS = list(LANG_MAP.keys())
