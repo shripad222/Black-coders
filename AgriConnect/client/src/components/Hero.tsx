@@ -69,7 +69,7 @@ const Hero = () => {
           </div>
           
           {/* Right Image */}
-          <div className="relative animate-scale-in">
+          <div className="relative animate-scale-in animate-float">
             <div className="absolute -inset-4 bg-gradient-to-r from-primary/20 to-accent/20 rounded-3xl blur-2xl" />
             <div 
               className="relative rounded-3xl shadow-[var(--shadow-soft)] w-full h-auto bg-gradient-to-br from-primary/20 to-secondary/20 aspect-video flex items-center justify-center bg-cover bg-center"
