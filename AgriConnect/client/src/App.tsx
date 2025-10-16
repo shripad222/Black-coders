@@ -7,6 +7,7 @@ import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 import { LanguageProvider } from "@/contexts/LanguageContext";
+import { TranslationLoadingOverlay } from "@/components/TranslationLoadingOverlay";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { LanguageSelector } from "@/components/LanguageSelector";
 import { AuthProvider } from "@/contexts/AuthContext";
@@ -33,6 +34,7 @@ function App() {
       <AuthProvider>
         <ThemeProvider>
           <LanguageProvider>
+            <TranslationLoadingOverlay />
             <TooltipProvider>
               <BrowserRouter>
                 <Routes>

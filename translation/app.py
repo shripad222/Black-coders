@@ -131,6 +131,9 @@ def translate_texts(req: TranslationRequest):
         # ✅ Postprocess
         translated_texts = ip.postprocess_batch(generated_tokens, lang=tgt_lang)
         
+        if DEVICE == "cuda":
+            torch.cuda.empty_cache()
+
         return {"translated_texts": translated_texts}
 
     except Exception as e:

@@ -2,12 +2,15 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { TrendingUp, TrendingDown, Minus } from "lucide-react";
 import { MarketPrice } from "@shared/schema";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 interface MarketPriceCardProps {
   marketPrice: MarketPrice;
 }
 
 export function MarketPriceCard({ marketPrice }: MarketPriceCardProps) {
+  const { t } = useLanguage();
+
   const getTrendIcon = () => {
     if (marketPrice.trend === "up") return <TrendingUp className="h-4 w-4" />;
     if (marketPrice.trend === "down") return <TrendingDown className="h-4 w-4" />;
@@ -45,7 +48,7 @@ export function MarketPriceCard({ marketPrice }: MarketPriceCardProps) {
         </div>
         {marketPrice.previousPrice && (
           <p className="text-xs text-muted-foreground mt-1">
-            Previous: ₹{Number(marketPrice.previousPrice).toFixed(2)}
+            {t("Previous:")} ₹{Number(marketPrice.previousPrice).toFixed(2)}
           </p>
         )}
       </CardContent>

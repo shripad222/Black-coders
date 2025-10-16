@@ -46,11 +46,11 @@ export default function Dashboard() {
           console.log('Fetching profile for user ID:', user.id); // Debug line
           const profile = await getUserProfile(user.id);
           console.log('Profile data:', profile); // Debug line
-          setUserName(profile?.name || 'Farmer');
+          setUserName(profile?.name || t('Farmer'));
         } catch (error) {
           console.error('Error fetching user profile:', error);
           // If profile fetch fails, try to get name from user metadata
-          setUserName(user.user_metadata?.name || user.email?.split('@')[0] || 'Farmer');
+          setUserName(user.user_metadata?.name || user.email?.split('@')[0] || t('Farmer'));
         }
       }
     };
@@ -68,33 +68,33 @@ export default function Dashboard() {
 
   const stats = [
     {
-      title: t("totalEarnings"),
+      title: t("Total Earnings"),
       value: "₹1,24,350",
-      change: "+12.5% from last month",
+      change: t("+12.5% from last month"),
       changeType: "positive" as const,
       icon: IndianRupee,
       testId: "stat-total-earnings",
     },
     {
-      title: "This Month",
+      title: t("This Month"),
       value: "₹28,450",
-      change: "+8.2% from last month",
+      change: t("+8.2% from last month"),
       changeType: "positive" as const,
       icon: TrendingUp,
       testId: "stat-this-month",
     },
     {
-      title: t("activeListing"),
+      title: t("Active Listings"),
       value: "12",
-      change: "3 pending approval",
+      change: t("3 pending approval"),
       changeType: "neutral" as const,
       icon: Package,
       testId: "stat-active-listings",
     },
     {
-      title: "Buyer Interests",
+      title: t("Buyer Interests"),
       value: "24",
-      change: "5 new this week",
+      change: t("5 new this week"),
       changeType: "positive" as const,
       icon: ShoppingCart,
       testId: "stat-buyer-interests",
@@ -105,10 +105,10 @@ export default function Dashboard() {
     <div className="space-y-6">
       <div>
         <h1 className="font-heading text-4xl font-bold text-foreground" data-testid="heading-dashboard">
-          Welcome back, {userName || 'Farmer'}!
+          {t("Welcome back,")} {userName || t('Farmer')}!
         </h1>
         <p className="text-muted-foreground mt-2">
-          Here's what's happening with your farm today
+          {t("Here's what's happening with your farm today")}
         </p>
       </div>
 
@@ -121,9 +121,9 @@ export default function Dashboard() {
       <div className="grid gap-6 lg:grid-cols-3">
         <div className="lg:col-span-2 space-y-4">
           <div className="flex items-center justify-between">
-            <h2 className="font-heading text-2xl font-semibold">{t("marketPrices")}</h2>
+            <h2 className="font-heading text-2xl font-semibold">{t("Market Prices")}</h2>
             <Button variant="ghost" size="sm" data-testid="button-view-all-market-prices">
-              {t("viewAll")}
+              {t("View All")}
             </Button>
           </div>
 
@@ -151,7 +151,7 @@ export default function Dashboard() {
         </div>
 
         <div className="space-y-4">
-          <h2 className="font-heading text-2xl font-semibold">{t("smartRecommendations")}</h2>
+          <h2 className="font-heading text-2xl font-semibold">{t("Smart Recommendations")}</h2>
           
           {recsLoading ? (
             <div className="space-y-4">
@@ -180,9 +180,9 @@ export default function Dashboard() {
               <CardContent className="flex flex-col items-center justify-center py-12">
                 <TrendingUp className="h-12 w-12 text-muted-foreground mb-4" />
                 <p className="text-center text-muted-foreground">
-                  No recommendations available yet.
+                  {t("No recommendations available yet.")}
                   <br />
-                  Add more produce listings to get insights.
+                  {t("Add more produce listings to get insights.")}
                 </p>
               </CardContent>
             </Card>

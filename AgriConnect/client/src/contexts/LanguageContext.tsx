@@ -1,15 +1,17 @@
 import { createContext, useContext, useState, useEffect } from "react";
 
-type Language = "en" | "hi" | "ta" | "te" | "kn" | "mr" | "bn" | "gu";
+type Language = "en" | "hi" | "ta" | "te" | "kn" | "mr" | "bn" | "gu" | "ml" | "kok" | "pa" | "or" | "as" | "brx" | "doi" | "ks" | "mai" | "mni" | "ne" | "sa" | "sat" | "sd" | "ur";
 
 interface LanguageContextType {
   language: Language;
   setLanguage: (lang: Language) => void;
   t: (key: string) => string;
   translatedContent: Record<string, string>;
+  isLoadingTranslations: boolean;
 }
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
+
 const initialKeys = [
   "Market", "Marketplace", "About", "Help", "Dashboard", "Login", "Register", "Logout",
   "Welcome back", "Total Earnings", "This Month", "Active Listings", "Pending Orders",
@@ -70,7 +72,26 @@ const initialKeys = [
   "📞 1800-AGRI-SETU",
   "📧 help@agrisetu.com",
   "⏰ 24/7 Available",
-  "© 2025 AgriSetu. All rights reserved. | Privacy Policy | Terms & Conditions"
+  "© 2025 AgriSetu. All rights reserved. | Privacy Policy | Terms & Conditions",
+  "Farmer",
+  "Total Earnings",
+  "+12.5% from last month",
+  "This Month",
+  "+8.2% from last month",
+  "Active Listings",
+  "3 pending approval",
+  "Buyer Interests",
+  "5 new this week",
+  "Welcome back,",
+  "Here's what's happening with your farm today",
+  "No recommendations available yet.",
+  "Add more produce listings to get insights.",
+  "Previous:",
+  "confidence",
+  "Reason:",
+  "Best market:",
+  "Estimated additional profit:",
+  "Translating page..."
 ];
 
 export function LanguageProvider({ children }: { children: React.ReactNode }) {
@@ -79,23 +100,17 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
     return (stored as Language) || "en";
   });
   const [translatedContent, setTranslatedContent] = useState<Record<string, string>>({});
-
-  const t = (key: string): string => {
-    return translatedContent[key] || key;
-  };
-
-  const handleSetLanguage = (lang: Language) => {
-    setLanguage(lang);
-    localStorage.setItem("language", lang);
-  };
+  const [isLoadingTranslations, setIsLoadingTranslations] = useState(false);
 
   const fetchTranslations = async (keys: string[], targetLang: Language) => {
+    setIsLoadingTranslations(true);
     if (targetLang === "en") {
       const englishTranslations: Record<string, string> = {};
       keys.forEach(key => {
         englishTranslations[key] = key;
       });
       setTranslatedContent(englishTranslations);
+      setIsLoadingTranslations(false);
       return;
     }
 
@@ -126,9 +141,11 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
       console.error("Error fetching translations:", error);
       const fallbackTranslations: Record<string, string> = {};
       keys.forEach(key => {
-        fallbackTranslations[key] = key;
-      });
-      setTranslatedContent(fallbackTranslations);
+          fallbackTranslations[key] = key;
+        });
+        setTranslatedContent(fallbackTranslations);
+    } finally {
+      setIsLoadingTranslations(false);
     }
   };
 
@@ -136,8 +153,17 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
     fetchTranslations(initialKeys, language);
   }, [language]);
 
+  const t = (key: string): string => {
+    return translatedContent[key] || key;
+  };
+
+  const handleSetLanguage = (lang: Language) => {
+    setLanguage(lang);
+    localStorage.setItem("language", lang);
+  };
+
   return (
-    <LanguageContext.Provider value={{ language, setLanguage: handleSetLanguage, t, translatedContent }}>
+    <LanguageContext.Provider value={{ language, setLanguage: handleSetLanguage, t, translatedContent, isLoadingTranslations }}>
       {children}
     </LanguageContext.Provider>
   );
@@ -160,4 +186,19 @@ export const languageOptions = [
   { code: "mr", name: "मराठी" },
   { code: "bn", name: "বাংলা" },
   { code: "gu", name: "ગુજરાતી" },
+  { code: "ml", name: "മലയാളം" },
+  { code: "kok", name: "कोंकणी" },
+  { code: "pa", name: "ਪੰਜਾਬੀ" },
+  { code: "or", name: "ଓଡ଼ିଆ" },
+  { code: "as", name: "অসমীয়া" },
+  { code: "brx", name: "बड़ो" },
+  { code: "doi", name: "डोगरी" },
+  { code: "ks", name: "کٲشُر" },
+  { code: "mai", name: "मैथिली" },
+  { code: "mni", name: "ꯃꯤꯇꯩ ꯂꯣꯟ" },
+  { code: "ne", name: "नेपाली" },
+  { code: "sa", name: "संस्कृतम्" },
+  { code: "sat", name: "ᱥᱟᱱᱛᱟᱲᱤ" },
+  { code: "sd", name: "سنڌي" },
+  { code: "ur", name: "اردو" },
 ];

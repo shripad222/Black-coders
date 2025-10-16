@@ -2,12 +2,15 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Lightbulb, TrendingUp } from "lucide-react";
 import { Recommendation } from "@shared/schema";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 interface RecommendationCardProps {
   recommendation: Recommendation;
 }
 
 export function RecommendationCard({ recommendation }: RecommendationCardProps) {
+  const { t } = useLanguage();
+
   const getConfidenceColor = () => {
     if (recommendation.confidence === "high") return "bg-chart-3/10 text-chart-3 border-chart-3/20";
     if (recommendation.confidence === "medium") return "bg-chart-2/10 text-chart-2 border-chart-2/20";
@@ -29,24 +32,24 @@ export function RecommendationCard({ recommendation }: RecommendationCardProps) 
           </div>
         </div>
         <Badge variant="outline" className={getConfidenceColor()}>
-          {recommendation.confidence} confidence
+          {recommendation.confidence} {t("confidence")}
         </Badge>
       </CardHeader>
       <CardContent className="space-y-3">
         <div>
-          <p className="text-sm font-medium mb-1">Reason:</p>
+          <p className="text-sm font-medium mb-1">{t("Reason:")}</p>
           <p className="text-sm text-muted-foreground" data-testid="text-reason">{recommendation.reason}</p>
         </div>
         {recommendation.marketName && (
           <div className="flex items-center gap-2 text-sm">
             <TrendingUp className="h-4 w-4 text-primary" />
-            <span className="text-muted-foreground">Best market:</span>
+            <span className="text-muted-foreground">{t("Best market:")}</span>
             <span className="font-medium" data-testid="text-market">{recommendation.marketName}</span>
           </div>
         )}
         {recommendation.estimatedProfit && (
           <div className="rounded-md bg-chart-3/10 p-3">
-            <p className="text-xs text-muted-foreground mb-1">Estimated additional profit:</p>
+            <p className="text-xs text-muted-foreground mb-1">{t("Estimated additional profit:")}</p>
             <p className="text-lg font-bold text-chart-3 tabular-nums" data-testid="text-profit">
               +₹{Number(recommendation.estimatedProfit).toFixed(2)}
             </p>
