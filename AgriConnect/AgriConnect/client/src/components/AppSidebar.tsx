@@ -1,5 +1,5 @@
 import { Home, TrendingUp, ShoppingBag, MessageSquare, BarChart3, User } from "lucide-react";
-import { useLocation } from "wouter";
+import { useLocation, useNavigate } from "react-router-dom";
 import {
   Sidebar,
   SidebarContent,
@@ -14,43 +14,44 @@ import {
 import { useLanguage } from "@/contexts/LanguageContext";
 
 export function AppSidebar() {
-  const [location, setLocation] = useLocation();
+  const location = useLocation();
+  const navigate = useNavigate();
   const { t } = useLanguage();
 
   const menuItems = [
     {
       title: t("dashboard"),
-      url: "/",
+      url: "/dashboard",
       icon: Home,
       testId: "nav-dashboard",
     },
     {
       title: t("market"),
-      url: "/market",
+      url: "/dashboard/market",
       icon: TrendingUp,
       testId: "nav-market",
     },
     {
       title: t("marketplace"),
-      url: "/marketplace",
+      url: "/dashboard/marketplace",
       icon: ShoppingBag,
       testId: "nav-marketplace",
     },
     {
       title: t("messages"),
-      url: "/messages",
+      url: "/dashboard/messages",
       icon: MessageSquare,
       testId: "nav-messages",
     },
     {
       title: t("analytics"),
-      url: "/analytics",
+      url: "/dashboard/analytics",
       icon: BarChart3,
       testId: "nav-analytics",
     },
     {
       title: t("profile"),
-      url: "/profile",
+      url: "/dashboard/profile",
       icon: User,
       testId: "nav-profile",
     },
@@ -79,8 +80,8 @@ export function AppSidebar() {
               {menuItems.map((item) => (
                 <SidebarMenuItem key={item.url}>
                   <SidebarMenuButton
-                    onClick={() => setLocation(item.url)}
-                    isActive={location === item.url}
+                    onClick={() => navigate(item.url)}
+                    isActive={location.pathname === item.url}
                     data-testid={item.testId}
                   >
                     <item.icon className="h-4 w-4" />
