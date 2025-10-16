@@ -7,12 +7,14 @@ const Hero = () => {
 
   return (
     <section className="relative overflow-hidden">
-      {/* Gradient Background */}
-      <div className="absolute inset-0 bg-gradient-to-b from-primary/10 to-secondary/10" />
+      {/* Removed Gradient Background */}
+      {/* <div className="absolute inset-0 bg-gradient-to-b from-primary/10 to-secondary/10" /> */}
       
-      <div className="container relative py-16 md:py-24">
-        <div className="grid lg:grid-cols-2 gap-12 items-center">
-          {/* Left Content */}
+      {/* Full-width container with background */}
+      <div className="w-full bg-background">
+        <div className="container relative py-16 md:py-24 px-4 sm:px-6 lg:px-8">
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            {/* Left Content */}
           <div className="space-y-8 animate-fade-in">
             <div className="inline-block rounded-full bg-primary/10 px-4 py-2 text-sm font-medium text-primary">
               {t("🌾 Digital Bridge for Your Farm")}
@@ -67,7 +69,7 @@ const Hero = () => {
           </div>
           
           {/* Right Image */}
-          <div className="relative animate-scale-in">
+          <div className="relative animate-scale-in animate-float">
             <div className="absolute -inset-4 bg-gradient-to-r from-primary/20 to-accent/20 rounded-3xl blur-2xl" />
             <div 
               className="relative rounded-3xl shadow-[var(--shadow-soft)] w-full h-auto bg-gradient-to-br from-primary/20 to-secondary/20 aspect-video flex items-center justify-center bg-cover bg-center"
@@ -88,6 +90,7 @@ const Hero = () => {
           </div>
         </div>
       </div>
+    </div>
     </section>
   );
 };

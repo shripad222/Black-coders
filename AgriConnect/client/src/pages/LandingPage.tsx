@@ -9,7 +9,7 @@ const LandingPage = () => {
   return (
     <div className="min-h-screen">
       <Header />
-      <main>
+      <main className="px-4 sm:px-6 lg:px-8">
         <Hero />
         <MarketDashboard />
         <VoiceAssistant />
