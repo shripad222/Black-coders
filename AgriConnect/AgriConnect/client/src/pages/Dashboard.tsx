@@ -6,11 +6,57 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useQuery } from "@tanstack/react-query";
-import { MarketPrice, Recommendation } from "@shared/schema";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useAuth } from "@/contexts/AuthContext";
+import { getUserProfile } from "@/utils/supabase";
+import { useEffect, useState } from "react";
+
+// Define types locally since @shared/schema may not exist
+interface MarketPrice {
+  id: string;
+  commodity: string;
+  variety: string;
+  min_price: number;
+  max_price: number;
+  modal_price: number;
+  market: string;
+  district: string;
+  state: string;
+  timestamp: string;
+}
+
+interface Recommendation {
+  id: string;
+  title: string;
+  description: string;
+  priority: 'high' | 'medium' | 'low';
+  category: string;
+}
 
 export default function Dashboard() {
   const { t } = useLanguage();
+  const { user } = useAuth();
+  const [userName, setUserName] = useState<string | null>(null);
+
+  // Fetch user profile to get the name
+  useEffect(() => {
+    const fetchUserProfile = async () => {
+      if (user?.id) {
+        try {
+          console.log('Fetching profile for user ID:', user.id); // Debug line
+          const profile = await getUserProfile(user.id);
+          console.log('Profile data:', profile); // Debug line
+          setUserName(profile?.name || 'Farmer');
+        } catch (error) {
+          console.error('Error fetching user profile:', error);
+          // If profile fetch fails, try to get name from user metadata
+          setUserName(user.user_metadata?.name || user.email?.split('@')[0] || 'Farmer');
+        }
+      }
+    };
+
+    fetchUserProfile();
+  }, [user]);
 
   const { data: marketPrices, isLoading: pricesLoading } = useQuery<MarketPrice[]>({
     queryKey: ["/api/market-prices"],
@@ -59,7 +105,7 @@ export default function Dashboard() {
     <div className="space-y-6">
       <div>
         <h1 className="font-heading text-4xl font-bold text-foreground" data-testid="heading-dashboard">
-          {t("welcome")}
+          Welcome back, {userName || 'Farmer'}!
         </h1>
         <p className="text-muted-foreground mt-2">
           Here's what's happening with your farm today

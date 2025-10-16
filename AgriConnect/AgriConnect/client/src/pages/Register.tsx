@@ -216,11 +216,8 @@ const Register = () => {
     try {
       const userData = await signUp(email, password, name, selectedState, selectedDistrict);
       
-      // Upsert the user profile with state and district after registration
-      // This will work whether the profile was created by the trigger or not
-      if (userData?.user?.id) {
-        await upsertUserProfile(userData.user.id, email, name, selectedState, selectedDistrict);
-      }
+      // The user profile is created by a trigger in Supabase.
+      // The name, state, and district are passed in the signUp options.
       
       // Navigate to dashboard after successful registration
       navigate("/dashboard");

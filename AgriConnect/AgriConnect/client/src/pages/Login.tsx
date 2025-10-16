@@ -12,18 +12,35 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
+  const [showResendLink, setShowResendLink] = useState(false);
   const navigate = useNavigate();
-  const { signIn } = useAuth();
+  const { signIn, resendConfirmationEmail } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setShowResendLink(false);
     
     try {
       await signIn(email, password);
       navigate("/dashboard");
     } catch (err: any) {
-      setError(err.message || "An error occurred during login");
+      if (err.message === 'Email not confirmed') {
+        setError('Please check your email to confirm your account before logging in.');
+        setShowResendLink(true);
+      } else {
+        setError(err.message || "An error occurred during login");
+      }
       console.error("Login error:", err);
+    }
+  };
+
+  const handleResendConfirmation = async () => {
+    try {
+      await resendConfirmationEmail(email);
+      setError('A new confirmation email has been sent. Please check your inbox.');
+      setShowResendLink(false);
+    } catch (error: any) {
+      setError(error.message || 'An error occurred while resending the confirmation email.');
     }
   };
 
@@ -82,6 +99,15 @@ const Login = () => {
             </div>
             
             {error && <p className="text-red-500 text-sm">{error}</p>}
+
+            {showResendLink && (
+              <div className="mt-4 text-center text-sm">
+                Didn't receive a confirmation email?{" "}
+                <Button variant="link" onClick={handleResendConfirmation} className="p-0 h-auto">
+                  Resend confirmation
+                </Button>
+              </div>
+            )}
             
             <Button type="submit" className="w-full bg-gradient-to-r from-primary to-accent">
               Sign In

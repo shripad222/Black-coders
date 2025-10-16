@@ -1,15 +1,15 @@
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { Menu, Globe, User } from "lucide-react";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import { Menu } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useState } from "react";
 
 const Header = () => {
+  const [isLoggedIn, setIsLoggedIn] = useState(true);
+
+  const handleLogout = () => {
+    setIsLoggedIn(false);
+  };
 
   const navItems = [
     { label: "Market", href: "#market" },
@@ -53,17 +53,24 @@ const Header = () => {
         </nav>
 
         <div className="flex items-center gap-2">
-          {/* Login/Register buttons for non-authenticated users, Profile for authenticated */}
-          <Link to="/login">
-            <Button variant="outline" size="sm">
-              Login
+          {isLoggedIn ? (
+            <Button variant="outline" size="sm" onClick={handleLogout}>
+              Logout
             </Button>
-          </Link>
-          <Link to="/register">
-            <Button size="sm" className="bg-gradient-to-r from-primary to-accent">
-              Register
-            </Button>
-          </Link>
+          ) : (
+            <>
+              <Link to="/login">
+                <Button variant="outline" size="sm">
+                  Login
+                </Button>
+              </Link>
+              <Link to="/register">
+                <Button size="sm" className="bg-gradient-to-r from-primary to-accent">
+                  Register
+                </Button>
+              </Link>
+            </>
+          )}
 
           {/* Mobile Menu */}
           <Sheet>
@@ -90,19 +97,26 @@ const Header = () => {
                 >
                   Dashboard
                 </Link>
-                {/* Login/Register Links for Mobile */}
-                <Link
-                  to="/login"
-                  className="text-lg font-medium transition-colors hover:text-primary pt-4"
-                >
-                  Login
-                </Link>
-                <Link
-                  to="/register"
-                  className="text-lg font-medium transition-colors hover:text-primary"
-                >
-                  Register
-                </Link>
+                {isLoggedIn ? (
+                  <Button variant="outline" size="sm" onClick={handleLogout}>
+                    Logout
+                  </Button>
+                ) : (
+                  <>
+                    <Link
+                      to="/login"
+                      className="text-lg font-medium transition-colors hover:text-primary pt-4"
+                    >
+                      Login
+                    </Link>
+                    <Link
+                      to="/register"
+                      className="text-lg font-medium transition-colors hover:text-primary"
+                    >
+                      Register
+                    </Link>
+                  </>
+                )}
               </nav>
             </SheetContent>
           </Sheet>

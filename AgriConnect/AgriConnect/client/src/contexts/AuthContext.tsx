@@ -7,6 +7,7 @@ interface AuthContextType {
   signUp: (email: string, password: string, name: string, state: string, district: string) => Promise<any>;
   signIn: (email: string, password: string) => Promise<any>;
   signOut: () => Promise<void>;
+  resendConfirmationEmail: (email: string) => Promise<any>;
   loading: boolean;
 }
 
@@ -48,7 +49,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           name,
           state,
           district
-        }
+        },
+        emailRedirectTo: `${window.location.origin}/dashboard`
       }
     });
 
@@ -89,11 +91,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(null);
   };
 
+  const resendConfirmationEmail = async (email: string) => {
+    const { data, error } = await supabase.auth.resend({
+      type: 'signup',
+      email: email,
+    });
+  
+    if (error) {
+      throw error;
+    }
+  
+    return data;
+  };
+
   const value = {
     user,
     signUp,
     signIn,
     signOut,
+    resendConfirmationEmail,
     loading
   };
 
