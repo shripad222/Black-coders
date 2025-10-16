@@ -14,7 +14,7 @@ const Footer = () => {
               <div className="h-10 w-10 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center text-white font-bold text-xl">
                 अ
               </div>
-              <span className="text-xl font-bold">{t("AgriSetu")}</span>
+              <span className="text-xl font-bold">{t("AgriMandi")}</span>
             </div>
             <p className="text-sm text-muted-foreground">
               {t("Digital bridge between farmers and market. In your language, for you.")}
@@ -47,8 +47,8 @@ const Footer = () => {
           <div>
             <h3 className="font-semibold mb-4">{t("Contact")}</h3>
             <ul className="space-y-2 text-sm text-muted-foreground">
-              <li>{t("📞 1800-AGRI-SETU")}</li>
-              <li>{t("📧 help@agrisetu.com")}</li>
+              <li>{t("📞 1800-AGRI-MANDI")}</li>
+              <li>{t("📧 help@agrimandi.com")}</li>
               <li>{t("⏰ 24/7 Available")}</li>
             </ul>
             <div className="flex gap-3 mt-4">
@@ -69,7 +69,7 @@ const Footer = () => {
         </div>
 
         <div className="border-t mt-8 pt-8 text-center text-sm text-muted-foreground">
-          <p>{t("© 2025 AgriSetu. All rights reserved. | Privacy Policy | Terms & Conditions")}</p>
+          <p>{t("© 2025 AgriMandi. All rights reserved. | Privacy Policy | Terms & Conditions")}</p>
         </div>
       </div>
     </footer>
