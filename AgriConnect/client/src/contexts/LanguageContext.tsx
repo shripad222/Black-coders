@@ -91,7 +91,9 @@ const initialKeys = [
   "Reason:",
   "Best market:",
   "Estimated additional profit:",
-  "Translating page..."
+  "Translating page...",
+  // Additional keys for landing page
+  "AgriConnect"
 ];
 
 export function LanguageProvider({ children }: { children: React.ReactNode }) {
@@ -103,48 +105,81 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
   const [isLoadingTranslations, setIsLoadingTranslations] = useState(false);
 
   const fetchTranslations = async (keys: string[], targetLang: Language) => {
+    // Only proceed if there are keys to translate
+    if (!keys || keys.length === 0) {
+      setIsLoadingTranslations(false);
+      return;
+    }
+    
     setIsLoadingTranslations(true);
     if (targetLang === "en") {
       const englishTranslations: Record<string, string> = {};
       keys.forEach(key => {
         englishTranslations[key] = key;
       });
-      setTranslatedContent(englishTranslations);
+      setTranslatedContent(prev => ({...prev, ...englishTranslations}));
       setIsLoadingTranslations(false);
       return;
     }
 
+    // Split into smaller batches to prevent API overloading
+    const batchSize = 20;
+    const allTranslations: Record<string, string> = {};
+
     try {
-      const response = await fetch("http://localhost:8000/translate", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ texts: keys, target_lang: targetLang }),
-      });
-      const data = await response.json();
-      if (data.translated_texts) {
-        const newTranslations: Record<string, string> = {};
-        keys.forEach((key, index) => {
-          newTranslations[key] = data.translated_texts[index];
+      for (let i = 0; i < keys.length; i += batchSize) {
+        const batch = keys.slice(i, i + batchSize);
+        
+        console.log(`Fetching translation batch: ${batch.length} keys for ${targetLang}`);
+        console.log(`Translation API URL: http://localhost:8001/translate`);
+        
+        const response = await fetch("http://localhost:8001/translate", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ texts: batch, target_lang: targetLang }),
         });
-        setTranslatedContent(newTranslations);
-      } else {
-        console.error("Translation API error:", data.error);
-        const fallbackTranslations: Record<string, string> = {};
-        keys.forEach(key => {
-          fallbackTranslations[key] = key;
-        });
-        setTranslatedContent(fallbackTranslations);
+        
+        console.log(`Response status: ${response.status}`);
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        console.log(`API response:`, data);
+        
+        if (data.translated_texts && Array.isArray(data.translated_texts)) {
+          batch.forEach((key, index) => {
+            if (index < data.translated_texts.length) {
+              allTranslations[key] = data.translated_texts[index];
+            } else {
+              allTranslations[key] = key; // fallback if lengths don't match
+            }
+          });
+        } else {
+          console.error("Translation API error:", data.error || "No translated_texts in response");
+          batch.forEach(key => {
+            allTranslations[key] = key;
+          });
+        }
+        
+        // Update state incrementally so user sees progress
+        setTranslatedContent(prev => ({...prev, ...allTranslations}));
       }
     } catch (error) {
       console.error("Error fetching translations:", error);
-      const fallbackTranslations: Record<string, string> = {};
+      console.error("This error usually means the translation API server is not running.");
+      console.error("Make sure to start the translation server at http://localhost:8000");
+      
+      // Fallback: just use original keys as translations for now
       keys.forEach(key => {
-          fallbackTranslations[key] = key;
-        });
-        setTranslatedContent(fallbackTranslations);
+        allTranslations[key] = key;
+      });
     } finally {
+      // Set all translations at the end
+      setTranslatedContent(prev => ({...prev, ...allTranslations}));
       setIsLoadingTranslations(false);
     }
   };
@@ -158,6 +193,7 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
   };
 
   const handleSetLanguage = (lang: Language) => {
+    setTranslatedContent({}); // Clear existing translations
     setLanguage(lang);
     localStorage.setItem("language", lang);
   };
