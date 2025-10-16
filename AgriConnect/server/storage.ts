@@ -52,23 +52,15 @@ export interface IStorage {
 }
 
 export class MemStorage implements IStorage {
-  private farmers: Map<string, Farmer>;
-  private produceListings: Map<string, ProduceListing>;
-  private buyerRequirements: Map<string, BuyerRequirement>;
-  private marketPrices: Map<string, MarketPrice>;
-  private messages: Map<string, Message>;
-  private salesHistory: Map<string, SalesHistory>;
-  private recommendations: Map<string, Recommendation>;
+  private farmers = new Map<string, Farmer>();
+  private produceListings = new Map<string, ProduceListing>();
+  private buyerRequirements = new Map<string, BuyerRequirement>();
+  private marketPrices = new Map<string, MarketPrice>();
+  private messages = new Map<string, Message>();
+  private salesHistory = new Map<string, SalesHistory>();
+  private recommendations = new Map<string, Recommendation>();
 
   constructor() {
-    this.farmers = new Map();
-    this.produceListings = new Map();
-    this.buyerRequirements = new Map();
-    this.marketPrices = new Map();
-    this.messages = new Map();
-    this.salesHistory = new Map();
-    this.recommendations = new Map();
-
     this.seedData();
   }
 
@@ -85,6 +77,7 @@ export class MemStorage implements IStorage {
     };
     this.farmers.set(defaultFarmer.id, defaultFarmer);
 
+    // --- Market Prices ---
     const marketPricesData: Omit<MarketPrice, "id">[] = [
       {
         mandiName: "Azadpur Mandi",
@@ -130,50 +123,6 @@ export class MemStorage implements IStorage {
         trend: "up",
         updatedAt: new Date(),
       },
-      {
-        mandiName: "Ludhiana Mandi",
-        location: "Punjab",
-        commodity: "Maize",
-        currentPrice: "2140.00",
-        previousPrice: "2200.00",
-        unit: "quintal",
-        changePercent: "-2.73",
-        trend: "down",
-        updatedAt: new Date(),
-      },
-      {
-        mandiName: "Jalandhar Mandi",
-        location: "Punjab",
-        commodity: "Barley",
-        currentPrice: "2350.00",
-        previousPrice: "2310.00",
-        unit: "quintal",
-        changePercent: "1.73",
-        trend: "up",
-        updatedAt: new Date(),
-      },
-      {
-        mandiName: "Patiala Mandi",
-        location: "Punjab",
-        commodity: "Mustard",
-        currentPrice: "5640.00",
-        previousPrice: "5580.00",
-        unit: "quintal",
-        changePercent: "1.08",
-        trend: "up",
-        updatedAt: new Date(),
-      },
-      {
-        mandiName: "Meerut Mandi",
-        location: "Uttar Pradesh",
-        commodity: "Potato",
-        currentPrice: "1250.00",
-        previousPrice: "1320.00",
-        unit: "quintal",
-        changePercent: "-5.30",
-        trend: "down",
-        updatedAt: new Date(),
-      },
     ];
 
     marketPricesData.forEach((price) => {
@@ -181,43 +130,105 @@ export class MemStorage implements IStorage {
       this.marketPrices.set(id, { id, ...price });
     });
 
+    // --- Produce Listings ---
     const produceListingsData: Omit<ProduceListing, "id">[] = [
       {
-        farmerId: "farmer-1",
-        cropName: "Wheat",
-        quantity: 50,
-        unit: "quintal",
-        pricePerUnit: "2850.00",
-        location: "Ludhiana, Punjab",
-        description: "Premium quality wheat, freshly harvested",
-        imageUrl: "/api/placeholder/wheat",
-        available: true,
-        createdAt: new Date(),
-      },
-      {
-        farmerId: "farmer-1",
-        cropName: "Rice",
-        quantity: 30,
-        unit: "quintal",
-        pricePerUnit: "3200.00",
-        location: "Amritsar, Punjab",
-        description: "Basmati rice, Grade A quality",
-        imageUrl: "/api/placeholder/rice",
-        available: true,
-        createdAt: new Date(),
-      },
-      {
-        farmerId: "farmer-1",
-        cropName: "Sugarcane",
-        quantity: 100,
-        unit: "quintal",
-        pricePerUnit: "3150.00",
-        location: "Punjab",
-        description: "Fresh sugarcane for sugar mills",
-        imageUrl: "/api/placeholder/sugarcane",
-        available: true,
-        createdAt: new Date(),
-      },
+    farmerId: "farmer-1",
+    cropName: "Wheat",
+    quantity: 50,
+    unit: "quintal",
+    pricePerUnit: "2850.00",
+    location: "Ludhiana, Punjab",
+    description: "Premium quality wheat, freshly harvested.",
+    imageUrl: "https://wpcdn.web.wsu.edu/news/uploads/sites/2797/2019/02/wheat-1188x792.jpg",
+    createdAt: new Date(),
+    available: true,
+  },
+  {
+    farmerId: "farmer-1",
+    cropName: "Rice",
+    quantity: 60,
+    unit: "quintal",
+    pricePerUnit: "3200.00",
+    location: "Amritsar, Punjab",
+    description: "Long-grain basmati rice, ideal for export.",
+    imageUrl: "https://ik.imagekit.io/386ptwjko5s/wp-content/uploads/2021/01/rice-cultivation-in-india.jpg",
+    createdAt: new Date(),
+    available: true,
+  },
+  {
+    farmerId: "farmer-1",
+    cropName: "Sugarcane",
+    quantity: 100,
+    unit: "quintal",
+    pricePerUnit: "3100.00",
+    location: "Bhatinda, Punjab",
+    description: "Freshly cut sugarcane with high juice content.",
+    imageUrl: "https://miro.medium.com/v2/resize:fit:678/1*9rPZWjLKVXDfTzERLscbmQ.png",
+    createdAt: new Date(),
+    available: true,
+  },
+  {
+    farmerId: "farmer-1",
+    cropName: "Maize",
+    quantity: 80,
+    unit: "quintal",
+    pricePerUnit: "2150.00",
+    location: "Patiala, Punjab",
+    description: "High-quality yellow maize for feed and food industries.",
+    imageUrl: "https://www.protectourlivelihood.in/wp-content/uploads/2025/05/Image-Maize.jpg",
+    createdAt: new Date(),
+    available: true,
+  },
+  {
+    farmerId: "farmer-1",
+    cropName: "Barley",
+    quantity: 70,
+    unit: "quintal",
+    pricePerUnit: "2350.00",
+    location: "Jalandhar, Punjab",
+    description: "Clean and dry barley suitable for brewing and feed.",
+    imageUrl: "https://blog.agribazaar.com/wp-content/uploads/2022/01/photo-1437252611977-07f74518abd7.jpg",
+    createdAt: new Date(),
+    available: true,
+  },
+  {
+    farmerId: "farmer-1",
+    cropName: "Mustard",
+    quantity: 45,
+    unit: "quintal",
+    pricePerUnit: "5600.00",
+    location: "Moga, Punjab",
+    description: "Fresh mustard seeds with high oil yield.",
+    imageUrl: "https://upload.wikimedia.org/wikipedia/commons/f/ff/Mustard_plant_flower.jpg",
+    createdAt: new Date(),
+    available: true,
+  },
+  {
+    farmerId: "farmer-1",
+    cropName: "Cotton",
+    quantity: 90,
+    unit: "quintal",
+    pricePerUnit: "7850.00",
+    location: "Fazilka, Punjab",
+    description: "Soft white cotton, freshly harvested and clean.",
+    imageUrl: "https://m.media-amazon.com/images/I/61WWhptbnEL._UF1000,1000_QL80_.jpg",
+    createdAt: new Date(),
+    available: true,
+  },
+  {
+    farmerId: "farmer-1",
+    cropName: "Potato",
+    quantity: 150,
+    unit: "quintal",
+    pricePerUnit: "1250.00",
+    location: "Hoshiarpur, Punjab",
+    description: "Freshly dug potatoes, perfect for table and processing use.",
+    imageUrl: "https://plantix.net/en/library/assets/custom/crop-images/potato.jpeg",
+    createdAt: new Date(),
+    available: true,
+  },
+      
     ];
 
     produceListingsData.forEach((listing) => {
@@ -225,6 +236,7 @@ export class MemStorage implements IStorage {
       this.produceListings.set(id, { id, ...listing });
     });
 
+    // --- Buyer Requirements ---
     const buyerRequirementsData: Omit<BuyerRequirement, "id">[] = [
       {
         buyerName: "Rajesh Wholesale",
@@ -252,19 +264,6 @@ export class MemStorage implements IStorage {
         active: true,
         createdAt: new Date(),
       },
-      {
-        buyerName: "Priya Traders",
-        cropNeeded: "Rice",
-        quantity: 50,
-        unit: "quintal",
-        expectedPriceMin: "3100.00",
-        expectedPriceMax: "3300.00",
-        location: "Haryana",
-        contactNumber: "+91 98765 33333",
-        description: "Premium basmati rice needed",
-        active: true,
-        createdAt: new Date(),
-      },
     ];
 
     buyerRequirementsData.forEach((req) => {
@@ -272,12 +271,14 @@ export class MemStorage implements IStorage {
       this.buyerRequirements.set(id, { id, ...req });
     });
 
+    // --- Recommendations ---
     const recommendationsData: Omit<Recommendation, "id">[] = [
       {
         farmerId: "farmer-1",
         cropName: "Wheat",
         recommendedAction: "Sell now at Azadpur Mandi",
-        reason: "Prices have increased by 2.5% in the last week. Market demand is high due to upcoming festival season.",
+        reason:
+          "Prices have increased by 2.5% in the last week. Market demand is high due to upcoming festival season.",
         marketName: "Azadpur Mandi, Delhi",
         estimatedProfit: "3500.00",
         confidence: "high",
@@ -287,7 +288,8 @@ export class MemStorage implements IStorage {
         farmerId: "farmer-1",
         cropName: "Rice",
         recommendedAction: "Wait for 1-2 weeks",
-        reason: "Current prices are slightly down. Historical trends show prices typically rise by 5-8% in the next two weeks.",
+        reason:
+          "Current prices are slightly down. Historical trends show prices typically rise by 5-8% in the next two weeks.",
         marketName: "Amritsar Mandi, Punjab",
         estimatedProfit: "4800.00",
         confidence: "medium",
@@ -301,133 +303,120 @@ export class MemStorage implements IStorage {
     });
   }
 
-  async getFarmer(id: string): Promise<Farmer | undefined> {
+  // ------------------- CRUD IMPLEMENTATIONS -------------------
+
+  async getFarmer(id: string) {
     return this.farmers.get(id);
   }
 
-  async getCurrentFarmer(): Promise<Farmer> {
+  async getCurrentFarmer() {
     return Array.from(this.farmers.values())[0];
   }
 
-  async createFarmer(insertFarmer: InsertFarmer): Promise<Farmer> {
+  async createFarmer(insertFarmer: InsertFarmer) {
     const id = randomUUID();
-    const farmer: Farmer = {
-      ...insertFarmer,
-      id,
-      createdAt: new Date(),
-    };
+    const farmer: Farmer = { ...insertFarmer, id, createdAt: new Date() };
     this.farmers.set(id, farmer);
     return farmer;
   }
 
-  async updateFarmer(id: string, updates: Partial<InsertFarmer>): Promise<Farmer | undefined> {
+  async updateFarmer(id: string, updates: Partial<InsertFarmer>) {
     const farmer = this.farmers.get(id);
     if (!farmer) return undefined;
-
-    const updatedFarmer = { ...farmer, ...updates };
-    this.farmers.set(id, updatedFarmer);
-    return updatedFarmer;
+    const updated = { ...farmer, ...updates };
+    this.farmers.set(id, updated);
+    return updated;
   }
 
-  async getProduceListings(): Promise<ProduceListing[]> {
+  async getProduceListings() {
     return Array.from(this.produceListings.values());
   }
 
-  async getProduceListing(id: string): Promise<ProduceListing | undefined> {
+  async getProduceListing(id: string) {
     return this.produceListings.get(id);
   }
 
-  async createProduceListing(insertListing: InsertProduceListing): Promise<ProduceListing> {
+  async createProduceListing(insertListing: InsertProduceListing) {
     const id = randomUUID();
-    const listing: ProduceListing = {
-      ...insertListing,
-      id,
-      createdAt: new Date(),
-    };
+    const listing: ProduceListing = { ...insertListing, id, createdAt: new Date() };
     this.produceListings.set(id, listing);
     return listing;
   }
 
-  async updateProduceListing(id: string, updates: Partial<InsertProduceListing>): Promise<ProduceListing | undefined> {
+  async updateProduceListing(id: string, updates: Partial<InsertProduceListing>) {
     const listing = this.produceListings.get(id);
     if (!listing) return undefined;
-
-    const updatedListing = { ...listing, ...updates };
-    this.produceListings.set(id, updatedListing);
-    return updatedListing;
+    const updated = { ...listing, ...updates };
+    this.produceListings.set(id, updated);
+    return updated;
   }
 
-  async deleteProduceListing(id: string): Promise<boolean> {
+  async deleteProduceListing(id: string) {
     return this.produceListings.delete(id);
   }
 
-  async getBuyerRequirements(): Promise<BuyerRequirement[]> {
+  async getBuyerRequirements() {
     return Array.from(this.buyerRequirements.values());
   }
 
-  async getBuyerRequirement(id: string): Promise<BuyerRequirement | undefined> {
+  async getBuyerRequirement(id: string) {
     return this.buyerRequirements.get(id);
   }
 
-  async createBuyerRequirement(insertRequirement: InsertBuyerRequirement): Promise<BuyerRequirement> {
+  async createBuyerRequirement(insertRequirement: InsertBuyerRequirement) {
     const id = randomUUID();
     const requirement: BuyerRequirement = {
       ...insertRequirement,
       id,
       createdAt: new Date(),
+      description: insertRequirement.description ?? null, // Ensure description is string | null
     };
     this.buyerRequirements.set(id, requirement);
     return requirement;
   }
 
-  async updateBuyerRequirement(id: string, updates: Partial<InsertBuyerRequirement>): Promise<BuyerRequirement | undefined> {
+  async updateBuyerRequirement(id: string, updates: Partial<InsertBuyerRequirement>) {
     const requirement = this.buyerRequirements.get(id);
     if (!requirement) return undefined;
-
-    const updatedRequirement = { ...requirement, ...updates };
-    this.buyerRequirements.set(id, updatedRequirement);
-    return updatedRequirement;
+    const updated = { ...requirement, ...updates };
+    this.buyerRequirements.set(id, updated);
+    return updated;
   }
 
-  async deleteBuyerRequirement(id: string): Promise<boolean> {
+  async deleteBuyerRequirement(id: string) {
     return this.buyerRequirements.delete(id);
   }
 
-  async getMarketPrices(): Promise<MarketPrice[]> {
+  async getMarketPrices() {
     return Array.from(this.marketPrices.values());
   }
 
-  async getMarketPrice(id: string): Promise<MarketPrice | undefined> {
+  async getMarketPrice(id: string) {
     return this.marketPrices.get(id);
   }
 
-  async createMarketPrice(insertPrice: InsertMarketPrice): Promise<MarketPrice> {
+  async createMarketPrice(insertPrice: InsertMarketPrice) {
     const id = randomUUID();
-    const price: MarketPrice = {
-      ...insertPrice,
-      id,
-      updatedAt: new Date(),
-    };
+    const price: MarketPrice = { ...insertPrice, id, updatedAt: new Date() };
     this.marketPrices.set(id, price);
     return price;
   }
 
-  async updateMarketPrice(id: string, updates: Partial<InsertMarketPrice>): Promise<MarketPrice | undefined> {
+  async updateMarketPrice(id: string, updates: Partial<InsertMarketPrice>) {
     const price = this.marketPrices.get(id);
     if (!price) return undefined;
-
-    const updatedPrice = { ...price, ...updates, updatedAt: new Date() };
-    this.marketPrices.set(id, updatedPrice);
-    return updatedPrice;
+    const updated = { ...price, ...updates, updatedAt: new Date() };
+    this.marketPrices.set(id, updated);
+    return updated;
   }
 
-  async getMessages(userId: string): Promise<Message[]> {
+  async getMessages(userId: string) {
     return Array.from(this.messages.values()).filter(
       (msg) => msg.senderId === userId || msg.receiverId === userId
     );
   }
 
-  async getConversationMessages(userId: string, otherUserId: string): Promise<Message[]> {
+  async getConversationMessages(userId: string, otherUserId: string) {
     return Array.from(this.messages.values()).filter(
       (msg) =>
         (msg.senderId === userId && msg.receiverId === otherUserId) ||
@@ -435,56 +424,39 @@ export class MemStorage implements IStorage {
     );
   }
 
-  async createMessage(insertMessage: InsertMessage): Promise<Message> {
+  async createMessage(insertMessage: InsertMessage) {
     const id = randomUUID();
-    const message: Message = {
-      ...insertMessage,
-      id,
-      createdAt: new Date(),
-    };
+    const message: Message = { ...insertMessage, id, createdAt: new Date() };
     this.messages.set(id, message);
     return message;
   }
 
-  async markMessageAsRead(id: string): Promise<boolean> {
-    const message = this.messages.get(id);
-    if (!message) return false;
-
-    message.read = true;
-    this.messages.set(id, message);
+  async markMessageAsRead(id: string) {
+    const msg = this.messages.get(id);
+    if (!msg) return false;
+    msg.read = true;
+    this.messages.set(id, msg);
     return true;
   }
 
-  async getSalesHistory(farmerId: string): Promise<SalesHistory[]> {
-    return Array.from(this.salesHistory.values()).filter(
-      (sale) => sale.farmerId === farmerId
-    );
+  async getSalesHistory(farmerId: string) {
+    return Array.from(this.salesHistory.values()).filter((sale) => sale.farmerId === farmerId);
   }
 
-  async createSalesHistory(insertSale: InsertSalesHistory): Promise<SalesHistory> {
+  async createSalesHistory(insertSale: InsertSalesHistory) {
     const id = randomUUID();
-    const sale: SalesHistory = {
-      ...insertSale,
-      id,
-      saleDate: new Date(),
-    };
+    const sale: SalesHistory = { ...insertSale, id, saleDate: new Date() };
     this.salesHistory.set(id, sale);
     return sale;
   }
 
-  async getRecommendations(farmerId: string): Promise<Recommendation[]> {
-    return Array.from(this.recommendations.values()).filter(
-      (rec) => rec.farmerId === farmerId
-    );
+  async getRecommendations(farmerId: string) {
+    return Array.from(this.recommendations.values()).filter((r) => r.farmerId === farmerId);
   }
 
-  async createRecommendation(insertRecommendation: InsertRecommendation): Promise<Recommendation> {
+  async createRecommendation(insertRecommendation: InsertRecommendation) {
     const id = randomUUID();
-    const recommendation: Recommendation = {
-      ...insertRecommendation,
-      id,
-      createdAt: new Date(),
-    };
+    const recommendation: Recommendation = { ...insertRecommendation, id, createdAt: new Date() };
     this.recommendations.set(id, recommendation);
     return recommendation;
   }
