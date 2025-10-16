@@ -53,11 +53,15 @@ const Header = () => {
         </nav>
 
         <div className="flex items-center gap-2">
-          {/* Profile Button */}
-          <Link to="/dashboard/profile">
-            <Button variant="outline" size="sm" className="gap-2">
-              <User className="h-4 w-4" />
-              <span className="hidden sm:inline">Profile</span>
+          {/* Login/Register buttons for non-authenticated users, Profile for authenticated */}
+          <Link to="/login">
+            <Button variant="outline" size="sm">
+              Login
+            </Button>
+          </Link>
+          <Link to="/register">
+            <Button size="sm" className="bg-gradient-to-r from-primary to-accent">
+              Register
             </Button>
           </Link>
 
@@ -85,6 +89,19 @@ const Header = () => {
                   className="text-lg font-medium transition-colors hover:text-primary"
                 >
                   Dashboard
+                </Link>
+                {/* Login/Register Links for Mobile */}
+                <Link
+                  to="/login"
+                  className="text-lg font-medium transition-colors hover:text-primary pt-4"
+                >
+                  Login
+                </Link>
+                <Link
+                  to="/register"
+                  className="text-lg font-medium transition-colors hover:text-primary"
+                >
+                  Register
                 </Link>
               </nav>
             </SheetContent>
