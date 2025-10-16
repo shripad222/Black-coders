@@ -9,11 +9,11 @@ import { useQuery } from "@tanstack/react-query";
 import { ProduceListing, BuyerRequirement } from "@shared/schema";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Card, CardContent } from "@/components/ui/card";
-import { useLocation } from "wouter";
+import { useNavigate } from "react-router-dom";
 
 export default function Marketplace() {
   const { t } = useLanguage();
-  const [, setLocation] = useLocation();
+  const navigate = useNavigate();
 
   const { data: produceListings, isLoading: listingsLoading } = useQuery<ProduceListing[]>({
     queryKey: ["/api/produce-listings"],
@@ -24,11 +24,11 @@ export default function Marketplace() {
   });
 
   const handleContactSeller = (listingId: string) => {
-    setLocation(`/messages?listing=${listingId}`);
+    navigate(`/dashboard/messages?listing=${listingId}`);
   };
 
   const handleMakeOffer = (requirementId: string) => {
-    setLocation(`/messages?requirement=${requirementId}`);
+    navigate(`/dashboard/messages?requirement=${requirementId}`);
   };
 
   return (
