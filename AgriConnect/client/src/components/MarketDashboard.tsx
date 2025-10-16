@@ -3,6 +3,8 @@ import { Badge } from "@/components/ui/badge";
 import { TrendingUp, TrendingDown, Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import MarketChart from "@/components/MarketChart";
+import { useLanguage } from "@/contexts/LanguageContext";
+
 const marketData = [
   { crop: "Tomato", price: "$2.50/kg", change: 8.5, market: "Mapusa Mandi", trend: "up" },
   { crop: "Onion", price: "$1.25/kg", change: -3.2, market: "Nashik", trend: "down" },
@@ -13,6 +15,7 @@ const marketData = [
 ];
 
 const MarketDashboard = () => {
+  const { t } = useLanguage();
 
   return (
     <section id="market" className="py-16 bg-gradient-to-b from-background to-muted/20">
@@ -20,11 +23,11 @@ const MarketDashboard = () => {
         <div className="text-center mb-12 space-y-4">
           <h2 className="text-3xl md:text-4xl font-bold">
             <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-              Today's Market Prices
+              {t("Today's Market Prices")}
             </span>
           </h2>
           <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-            View real-time mandi prices and trends. Search using voice!
+            {t("View real-time mandi prices and trends. Search using voice!")}
           </p>
         </div>
 
@@ -33,7 +36,7 @@ const MarketDashboard = () => {
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
             <Input 
-              placeholder="Search crop (e.g., Tomato, Onion)..." 
+              placeholder={t("Search crop (e.g., Tomato, Onion)...")} 
               className="pl-10 h-12 text-lg"
             />
           </div>
@@ -69,7 +72,7 @@ const MarketDashboard = () => {
               <CardContent>
                 <div className="text-3xl font-bold text-primary">{item.price}</div>
                 <div className="text-sm text-muted-foreground mt-2">
-                  Last updated: Today 2:30 PM
+                  {t("Last updated: Today 2:30 PM")}
                 </div>
               </CardContent>
             </Card>
@@ -80,10 +83,10 @@ const MarketDashboard = () => {
         <div className="mt-12 bg-card rounded-lg border p-4 overflow-hidden">
           <div className="flex items-center gap-2 mb-2">
             <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />
-            <span className="text-sm font-medium">Live Updates</span>
+            <span className="text-sm font-medium">{t("Live Updates")}</span>
           </div>
           <div className="text-sm text-muted-foreground animate-marquee">
-            🌾 Wheat prices up in Pune by $5/quintal • 🌶️ Chilli demand high in Belgaum • 🧅 Onion export news from Nashik • 🍅 Tomato season peak in Goa
+            {t("🌾 Wheat prices up in Pune by $5/quintal • 🌶️ Chilli demand high in Belgaum • 🧅 Onion export news from Nashik • 🍅 Tomato season peak in Goa")}
           </div>
         </div>
 

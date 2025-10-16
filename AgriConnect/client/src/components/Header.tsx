@@ -3,9 +3,12 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Menu } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useState } from "react";
+import { LanguageSelector } from "./LanguageSelector";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const Header = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(true);
+  const { t } = useLanguage();
 
   const handleLogout = () => {
     setIsLoggedIn(false);
@@ -55,22 +58,23 @@ const Header = () => {
         <div className="flex items-center gap-2">
           {isLoggedIn ? (
             <Button variant="outline" size="sm" onClick={handleLogout}>
-              Logout
+              {t("Logout")}
             </Button>
           ) : (
             <>
               <Link to="/login">
                 <Button variant="outline" size="sm">
-                  Login
+                  {t("Login")}
                 </Button>
               </Link>
               <Link to="/register">
                 <Button size="sm" className="bg-gradient-to-r from-primary to-accent">
-                  Register
+                  {t("Register")}
                 </Button>
               </Link>
             </>
           )}
+          <LanguageSelector />
 
           {/* Mobile Menu */}
           <Sheet>
@@ -87,7 +91,7 @@ const Header = () => {
                     href={item.href}
                     className="text-lg font-medium transition-colors hover:text-primary"
                   >
-                    {item.label}
+                    {t(item.label)}
                   </a>
                 ))}
                 {/* Dashboard Link for Mobile */}
@@ -95,11 +99,11 @@ const Header = () => {
                   to="/dashboard"
                   className="text-lg font-medium transition-colors hover:text-primary"
                 >
-                  Dashboard
+                  {t("Dashboard")}
                 </Link>
                 {isLoggedIn ? (
                   <Button variant="outline" size="sm" onClick={handleLogout}>
-                    Logout
+                    {t("Logout")}
                   </Button>
                 ) : (
                   <>
@@ -107,13 +111,13 @@ const Header = () => {
                       to="/login"
                       className="text-lg font-medium transition-colors hover:text-primary pt-4"
                     >
-                      Login
+                      {t("Login")}
                     </Link>
                     <Link
                       to="/register"
                       className="text-lg font-medium transition-colors hover:text-primary"
                     >
-                      Register
+                      {t("Register")}
                     </Link>
                   </>
                 )}

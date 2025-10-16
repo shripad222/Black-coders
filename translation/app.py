@@ -1,10 +1,25 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import torch
 from transformers import AutoModelForSeq2SeqLM, AutoTokenizer
 from IndicTransToolkit.processor import IndicProcessor
 
 app = FastAPI(title="IndicTrans2 Translation API", version="1.0")
+
+origins = [
+    "http://localhost",
+    "http://localhost:5173", # Your frontend's address
+    "http://localhost:5000", # Another common frontend dev port
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # ✅ Language mapping (short code to Flores-200 format)
 LANG_MAP = {
@@ -35,7 +50,7 @@ LANG_MAP = {
 SUPPORTED_LANGS = list(LANG_MAP.keys())
 
 # ✅ Initialize model and tokenizer
-DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
+DEVICE = "cuda"
 model_name = "ai4bharat/indictrans2-en-indic-1B"
 
 print(f"Loading IndicTrans2 model on {DEVICE}...")
@@ -52,16 +67,16 @@ print("✅ IndicTrans2 model loaded successfully")
 
 # ✅ Request schema
 class TranslationRequest(BaseModel):
-    text: str
+    texts: list[str]
     target_lang: str  # "hi", "ta", "te", "bn", "ml"
 
 @app.post("/translate")
-def translate_text(req: TranslationRequest):
-    input_text = req.text.strip()
+def translate_texts(req: TranslationRequest):
+    input_texts = [text.strip() for text in req.texts]
     target_lang = req.target_lang.lower()
 
-    if not input_text:
-        return {"error": "Text cannot be empty"}
+    if not input_texts or all(not text for text in input_texts):
+        return {"error": "Texts cannot be empty"}
     if target_lang not in SUPPORTED_LANGS:
         return {"error": f"Unsupported target language: {target_lang}. Supported: {SUPPORTED_LANGS}"}
 
@@ -71,13 +86,13 @@ def translate_text(req: TranslationRequest):
         
         # ✅ Preprocess the input using IndicProcessor
         batch = ip.preprocess_batch(
-            [input_text],
+            input_texts,
             src_lang=src_lang,
             tgt_lang=tgt_lang
         )
         
         # Debug: Check if preprocessing worked
-        if not batch or batch[0] is None:
+        if not batch or any(item is None for item in batch):
             return {"error": f"Preprocessing failed. Check IndicProcessor installation."}
         
         print(f"Preprocessed batch: {batch}")
@@ -114,9 +129,9 @@ def translate_text(req: TranslationRequest):
         print(f"Decoded tokens: {generated_tokens}")
         
         # ✅ Postprocess
-        translations = ip.postprocess_batch(generated_tokens, lang=tgt_lang)
+        translated_texts = ip.postprocess_batch(generated_tokens, lang=tgt_lang)
         
-        return {"translated_text": translations[0]}
+        return {"translated_texts": translated_texts}
 
     except Exception as e:
         import traceback

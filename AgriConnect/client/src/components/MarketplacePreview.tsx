@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { MapPin, Phone, ShoppingCart, MessageCircle } from "lucide-react";
 import ChatDialog from "@/components/ChatDialog";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const listings = [
   {
@@ -41,6 +42,7 @@ const listings = [
 const MarketplacePreview = () => {
   const [chatOpen, setChatOpen] = useState(false);
   const [selectedListing, setSelectedListing] = useState<{ farmer: string; crop: string } | null>(null);
+  const { t } = useLanguage();
 
   const handleChatOpen = (farmer: string, crop: string) => {
     setSelectedListing({ farmer, crop });
@@ -53,11 +55,11 @@ const MarketplacePreview = () => {
         <div className="text-center mb-12 space-y-4">
           <h2 className="text-3xl md:text-4xl font-bold">
             <span className="bg-gradient-to-r from-secondary to-primary bg-clip-text text-transparent">
-              Today's Marketplace
+              {t("Today's Marketplace")}
             </span>
           </h2>
           <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-            Buy directly from farmers. Sell your produce.
+            {t("Buy directly from farmers. Sell your produce.")}
           </p>
         </div>
 
@@ -75,7 +77,7 @@ const MarketplacePreview = () => {
                       <CardTitle className="text-xl">{listing.crop}</CardTitle>
                       {listing.verified && (
                         <Badge className="bg-blue-500/10 text-blue-700">
-                          ✓ Verified
+                          {t("✓ Verified")}
                         </Badge>
                       )}
                     </div>
@@ -89,11 +91,11 @@ const MarketplacePreview = () => {
               <CardContent className="space-y-4">
                 <div className="grid grid-cols-2 gap-3 text-sm">
                   <div>
-                    <span className="text-muted-foreground">Quantity:</span>
+                    <span className="text-muted-foreground">{t("Quantity:")}</span>
                     <p className="font-medium">{listing.quantity}</p>
                   </div>
                   <div>
-                    <span className="text-muted-foreground">Quality:</span>
+                    <span className="text-muted-foreground">{t("Quality:")}</span>
                     <p className="font-medium">{listing.quality}</p>
                   </div>
                 </div>
@@ -111,11 +113,11 @@ const MarketplacePreview = () => {
                     onClick={() => handleChatOpen(listing.farmer, listing.crop)}
                   >
                     <MessageCircle className="h-4 w-4 mr-2" />
-                    Chat
+                    {t("Chat")}
                   </Button>
                   <Button className="w-full" size="sm">
                     <ShoppingCart className="h-4 w-4 mr-2" />
-                    Buy
+                    {t("Buy")}
                   </Button>
                 </div>
               </CardContent>
@@ -125,7 +127,7 @@ const MarketplacePreview = () => {
 
         <div className="text-center">
           <Button size="lg" variant="outline" className="gap-2">
-            View All Listings
+            {t("View All Listings")}
             <span className="text-muted-foreground">→</span>
           </Button>
         </div>

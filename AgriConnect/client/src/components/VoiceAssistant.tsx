@@ -2,15 +2,17 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Mic, MicOff, Volume2 } from "lucide-react";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const VoiceAssistant = () => {
   const [isListening, setIsListening] = useState(false);
   const [transcript, setTranscript] = useState("");
+  const { t } = useLanguage();
 
   const toggleListening = () => {
     setIsListening(!isListening);
     if (!isListening) {
-      setTranscript("I'm listening... How can I help?");
+      setTranscript(t("I'm listening... How can I help?"));
     } else {
       setTranscript("");
     }
@@ -23,12 +25,11 @@ const VoiceAssistant = () => {
           <div className="space-y-4">
             <h2 className="text-3xl md:text-4xl font-bold">
               <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-                Speak in Your Voice
+                {t("Speak in Your Voice")}
               </span>
             </h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              AgriSetu understands Konkani, Hindi and Marathi. 
-              Ask questions, search prices, or register crops.
+              {t("AgriSetu understands Konkani, Hindi and Marathi. Ask questions, search prices, or register crops.")}
             </p>
           </div>
 
@@ -68,11 +69,11 @@ const VoiceAssistant = () => {
               <div className="text-center">
                 {isListening ? (
                   <p className="text-lg font-medium text-primary animate-pulse">
-                    🎤 I'm listening...
+                    {t("🎤 I'm listening...")}
                   </p>
                 ) : (
                   <p className="text-muted-foreground">
-                    Press mic to start speaking
+                    {t("Press mic to start speaking")}
                   </p>
                 )}
               </div>
@@ -89,28 +90,28 @@ const VoiceAssistant = () => {
 
               {/* Example Queries */}
               <div className="space-y-3">
-                <p className="text-sm font-medium text-muted-foreground">Example Questions:</p>
+                <p className="text-sm font-medium text-muted-foreground">{t("Example Questions:")}</p>
                 <div className="grid gap-2">
                   <Button 
                     variant="outline" 
                     className="justify-start text-left h-auto py-3 hover:bg-accent/10"
-                    onClick={() => setTranscript("What is the price of tomatoes today?")}
+                    onClick={() => setTranscript(t("What is the price of tomatoes today?"))}
                   >
-                    "What is the price of tomatoes today?"
+                    {t("What is the price of tomatoes today?")}
                   </Button>
                   <Button 
                     variant="outline" 
                     className="justify-start text-left h-auto py-3 hover:bg-accent/10"
-                    onClick={() => setTranscript("Register my new crop")}
+                    onClick={() => setTranscript(t("Register my new crop"))}
                   >
-                    "Register my new crop"
+                    {t("Register my new crop")}
                   </Button>
                   <Button 
                     variant="outline" 
                     className="justify-start text-left h-auto py-3 hover:bg-accent/10"
-                    onClick={() => setTranscript("Who are the buyers in Goa?")}
+                    onClick={() => setTranscript(t("Who are the buyers in Goa?"))}
                   >
-                    "Who are the buyers in Goa?"
+                    {t("Who are the buyers in Goa?")}
                   </Button>
                 </div>
               </div>
@@ -121,19 +122,19 @@ const VoiceAssistant = () => {
           <div className="flex flex-wrap justify-center gap-4 text-sm">
             <div className="flex items-center gap-2 bg-card rounded-full px-4 py-2 shadow-sm">
               <span className="text-2xl">🗣️</span>
-              <span>Konkani</span>
+              <span>{t("Konkani")}</span>
             </div>
             <div className="flex items-center gap-2 bg-card rounded-full px-4 py-2 shadow-sm">
               <span className="text-2xl">🗣️</span>
-              <span>Hindi</span>
+              <span>{t("Hindi")}</span>
             </div>
             <div className="flex items-center gap-2 bg-card rounded-full px-4 py-2 shadow-sm">
               <span className="text-2xl">🗣️</span>
-              <span>Marathi</span>
+              <span>{t("Marathi")}</span>
             </div>
             <div className="flex items-center gap-2 bg-card rounded-full px-4 py-2 shadow-sm">
               <span className="text-2xl">🗣️</span>
-              <span>English</span>
+              <span>{t("English")}</span>
             </div>
           </div>
         </div>
