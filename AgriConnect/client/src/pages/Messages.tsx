@@ -7,12 +7,10 @@ import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Send, Search } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { useQuery } from "@tanstack/react-query";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/utils/supabase";
-import { useLocation } from "wouter";
-import { ProduceListing } from "@shared/schema";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface Message {
   id: string;
@@ -37,64 +35,30 @@ const jayId = "dc6ee612-610f-41a4-875c-9bbfcad933c0"; // Jay (Seller)
 
 export default function Messages() {
   const { t } = useLanguage();
-  const [location] = useLocation();
+  const { user } = useAuth(); // Get current user from AuthContext
   const [selectedConversation, setSelectedConversation] = useState<Conversation | null>(null);
   const [messageText, setMessageText] = useState("");
   const [allMessages, setAllMessages] = useState<Message[]>([]);
 
-  // Determine current user based on URL or default to Jay
-  const queryParams = new URLSearchParams(location.split("?")[1]);
-  const listingId = queryParams.get("listing");
+  const currentUserId = user?.id; // Use actual logged-in user ID
 
-  const [currentUserId, setCurrentUserId] = useState(jayId); // Default to Jay
-  const [otherUserId, setOtherUserId] = useState(ashdenId); // Default to Ashden
-
-  // Fetch produce listing details if listingId is present
-  const { data: produceListing, isLoading: produceListingLoading } = useQuery<ProduceListing>({
-    queryKey: ["/api/produce-listings", listingId],
-    enabled: !!listingId,
-    queryFn: async () => {
-      const response = await fetch(`/api/produce-listings/${listingId}`);
-      if (!response.ok) {
-        throw new Error("Failed to fetch produce listing");
-      }
-      return response.json();
-    },
-  });
+  // Determine other user based on currentUserId
+  const otherUserId = currentUserId === ashdenId ? jayId : ashdenId;
+  const otherUserName = currentUserId === ashdenId ? "Jay" : "Ashden Mascarenhas";
 
   useEffect(() => {
-    if (listingId && produceListing) {
-      // If listingId is present, assume current user is Ashden (buyer)
-      setCurrentUserId(ashdenId);
-      // And the other user is the farmer from the listing
-      // NOTE: ProduceListing schema does not directly have farmerName or farmerId for now, hardcoding Jay
-      setOtherUserId(jayId); // Assuming Jay is the farmer for now
+    if (!currentUserId) return; // Wait for user to be loaded
 
-      setSelectedConversation({
-        id: produceListing.id, // Using listing ID as conversation ID for simplicity
-        name: produceListing.cropName, // Display crop name as conversation name for now
-        lastMessage: "",
-        timestamp: "",
-        unread: 0,
-        avatar: "",
-        otherUserId: jayId,
-      });
-    } else {
-      // If no listingId, assume current user is Jay (seller)
-      setCurrentUserId(jayId);
-      setOtherUserId(ashdenId);
-
-      setSelectedConversation({
-        id: "ashden-jay-chat",
-        name: "Ashden Mascarenhas",
-        lastMessage: "",
-        timestamp: "",
-        unread: 0,
-        avatar: "",
-        otherUserId: ashdenId,
-      });
-    }
-  }, [listingId, produceListing]);
+    setSelectedConversation({
+      id: "ashden-jay-chat", // A fixed ID for this specific conversation
+      name: otherUserName,
+      lastMessage: "",
+      timestamp: "",
+      unread: 0,
+      avatar: "",
+      otherUserId: otherUserId,
+    });
+  }, [currentUserId, otherUserId, otherUserName]);
 
   useEffect(() => {
     if (!selectedConversation || !currentUserId || !otherUserId) return;
@@ -117,7 +81,7 @@ export default function Messages() {
   }, [selectedConversation, currentUserId, otherUserId]);
 
   const handleSendMessage = async () => {
-    if (!messageText.trim() || !selectedConversation) return;
+    if (!messageText.trim() || !selectedConversation || !currentUserId) return;
 
     const { data, error } = await supabase.from("messages").insert([
       {
@@ -133,7 +97,9 @@ export default function Messages() {
       setAllMessages((prev) => [...prev, data[0]]);
       setMessageText("");
     }
-  };  return (
+  };
+
+  return (
     <div className="space-y-6">
       <div>
         <h1 className="font-heading text-4xl font-bold" data-testid="heading-messages">
