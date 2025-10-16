@@ -81,7 +81,7 @@ export default function Marketplace() {
                 <ProduceListingCard
                   key={listing.id}
                   listing={listing}
-                  onContact={handleContactSeller}
+                  onContact={() => handleContactSeller(listing.id)}
                 />
               ))}
             </div>
@@ -97,7 +97,7 @@ export default function Marketplace() {
                 </p>
                 <Button data-testid="button-create-first-listing">
                   <Plus className="mr-2 h-4 w-4" />
-                  Create Your First Listing
+                  {t("addListing")}
                 </Button>
               </CardContent>
             </Card>
