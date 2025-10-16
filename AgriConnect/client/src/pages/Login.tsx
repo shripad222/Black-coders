@@ -53,12 +53,12 @@ const Login = () => {
               A
             </div>
             <CardTitle className="text-2xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-              AgriConnect
+              AgriMandi
             </CardTitle>
           </div>
           <CardTitle className="text-2xl">Sign in to your account</CardTitle>
           <CardDescription>
-            Enter your email and password to access your AgriConnect account
+            Enter your email and password to access your AgriMandi account
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -68,7 +68,7 @@ const Login = () => {
               <Input 
                 id="email" 
                 type="email" 
-                placeholder="name@agriconnect.com" 
+                placeholder="name@agrimandi.com" 
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required 

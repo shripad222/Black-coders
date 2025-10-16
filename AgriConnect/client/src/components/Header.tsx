@@ -16,10 +16,8 @@ const Header = () => {
   };
 
   const navItems = [
-    { label: "Market", href: "#market" },
-    { label: "Marketplace", href: "#marketplace" },
-    { label: "About", href: "#about" },
-    { label: "Help", href: "#help" },
+    { label: "Market", href: "/dashboard/market" },
+    { label: "Marketplace", href: "/dashboard/marketplace" },
   ];
 
   return (
@@ -31,7 +29,7 @@ const Header = () => {
               A
             </div>
             <span className="text-xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-              AgriConnect
+              AgriMandi
             </span>
           </div>
         </div>
@@ -39,13 +37,13 @@ const Header = () => {
         {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center gap-6">
           {navItems.map((item) => (
-            <a
+            <Link
               key={item.href}
-              href={item.href}
+              to={item.href}
               className="text-sm font-medium transition-colors hover:text-primary"
             >
               {item.label}
-            </a>
+            </Link>
           ))}
           {/* Dashboard Link */}
           <Link
@@ -88,13 +86,13 @@ const Header = () => {
             <SheetContent>
               <nav className="flex flex-col gap-4 mt-8">
                 {navItems.map((item) => (
-                  <a
+                  <Link
                     key={item.href}
-                    href={item.href}
+                    to={item.href}
                     className="text-lg font-medium transition-colors hover:text-primary"
                   >
                     {t(item.label)}
-                  </a>
+                  </Link>
                 ))}
                 {/* Dashboard Link for Mobile */}
                 <Link
