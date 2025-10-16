@@ -236,12 +236,12 @@ const Register = () => {
               A
             </div>
             <CardTitle className="text-2xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-              AgriConnect
+AgriMandi
             </CardTitle>
           </div>
           <CardTitle className="text-2xl">Create an account</CardTitle>
           <CardDescription>
-            Enter your details to get started with AgriConnect
+            Enter your details to get started with AgriMandi
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -263,7 +263,7 @@ const Register = () => {
               <Input 
                 id="email" 
                 type="email" 
-                placeholder="name@agriconnect.com" 
+                placeholder="name@agrimandi.com" 
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required 

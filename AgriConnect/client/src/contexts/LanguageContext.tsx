@@ -93,7 +93,7 @@ const initialKeys = [
   "Estimated additional profit:",
   "Translating page...",
   // Additional keys for landing page
-  "AgriConnect"
+  "AgriMandi"
 ];
 
 export function LanguageProvider({ children }: { children: React.ReactNode }) {
