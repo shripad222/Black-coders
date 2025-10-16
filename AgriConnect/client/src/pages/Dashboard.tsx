@@ -11,6 +11,8 @@ import { useAuth } from "@/contexts/AuthContext";
 import { getUserProfile } from "@/utils/supabase";
 import { useEffect, useState } from "react";
 
+import BackgroundVideo from '@/utils/BackgroundLines.mp4';
+
 // Define types locally
 interface MarketPrice {
     id: string;
@@ -174,33 +176,65 @@ export default function Dashboard() {
                     </p>
                 </div>
                 <Button onClick={handleVoiceRead} variant="outline" disabled={analysisState !== 'results'}>
-                    {/* CORRECTED: Increased icon size to h-6 w-6 */}
                     {isVoiceActive ? <Volume2 className="h-6 w-6 mr-2 animate-pulse" /> : <Mic className="h-6 w-6 mr-2" />}
                     {isVoiceActive ? t("Speaking...") : t("Read Summary")}
                 </Button>
             </div>
 
             {/* Main Recommendation Card */}
-            <Card className="border-2 border-primary/50 shadow-xl">
-                <CardHeader>
-                    <CardTitle className="font-heading text-3xl flex items-center gap-3">
-                        <Brain className="h-8 w-8 text-primary"/>
+            <Card className="border-2 border-primary/50 shadow-xl relative overflow-hidden">
+                {/* 1. Full-Card Background Element Container */}
+                <div
+                    className="absolute inset-0 z-0"
+                    // Added the bright gradient as the base background for the entire card
+                    style={{
+                        backgroundImage: 'linear-gradient(to right top, #a8edea, #fed6e3)',
+                        backgroundColor: 'transparent'
+                    }}
+                >
+                    {/* 1a. Video Background (Low Opacity) */}
+                    <video
+                        src={BackgroundVideo}
+                        className="absolute inset-0 w-full h-full object-cover"
+                        loop
+                        autoPlay
+                        muted
+                        playsInline
+                        // Video opacity remains at 40%
+                        style={{ opacity: 0.4 }}
+                        poster="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"
+                    />
+
+                    {/* 1b. Black Overlay (Reduced Opacity: 20%) */}
+                    {/* This covers the video and the gradient, unifying the background */}
+                    <div className="absolute inset-0 bg-black/20"></div>
+                </div>
+
+                {/* 2. CardHeader - Now only holds the content (Title) and needs a higher z-index */}
+                <CardHeader className="relative p-4 z-10 min-h-[150px] flex items-center justify-center">
+                    <CardTitle className="font-heading text-3xl flex flex-col items-center gap-2 text-white text-center">
+                        <Brain className="h-10 w-10"/>
                         {t("Top Recommendation for Your Farm")}
+                        <p className="text-xl font-normal text-gray-200 mt-1">{t("Powered by AI Crop Match")}</p>
                     </CardTitle>
                 </CardHeader>
-                <CardContent className="min-h-[500px] flex flex-col justify-center items-center">
+
+                {/* 3. CardContent - Also needs a relative position and z-index to sit on top of the background */}
+                <CardContent className="min-h-[500px] flex flex-col justify-center items-center relative z-10 bg-white/50">
+
                     {analysisState === 'initial' && (
-                        <div className="text-center">
+                        <div className="text-center bg-white/70 p-6 rounded-lg shadow-lg"> {/* Added a slight background for contrast */}
                             <p className="text-lg text-muted-foreground mb-4">{t("Tap the microphone to start the analysis")}</p>
                             {/* Microphone button for analysis start */}
                             <Button size="lg" className="rounded-full w-24 h-24" onClick={handleStartAnalysis}>
-                                <Mic className="w-24 h-24"/>
+                                <Mic className="w-12 h-12"/>
                             </Button>
                         </div>
                     )}
 
                     {analysisState === 'loading' && (
-                        <div className="flex flex-col items-center gap-4 text-center">
+                        <div className="flex flex-col items-center gap-4 text-center bg-white/70 p-6 rounded-lg shadow-lg"> {/* Added a slight background for contrast */}
+                            {/* ... (loading animation code) ... */}
                             <div className="relative w-48 h-48">
                                 <div className="absolute top-1/2 left-1/4 w-1 h-8 bg-primary/70 rounded-full animate-rain-1"></div>
                                 <div className="absolute top-1/2 left-1/2 w-1 h-12 bg-primary/70 rounded-full animate-rain-2"></div>
@@ -213,14 +247,20 @@ export default function Dashboard() {
                     )}
 
                     {analysisState === 'results' && (
+                        // Results content will now appear over the subtle card background
                         <div className="flex flex-col items-center gap-6 text-center w-full">
+                            {/* NOTE: You might need to adjust the background of these inner elements
+                                (like the p-4 bg-muted/50 rounded-lg) to ensure high readability
+                                against the new background */}
                             <div className="relative w-96 h-96 rounded-full overflow-hidden shadow-lg border-4 border-primary/20">
                                 <img src={topCrop.imageUrl} alt={topCrop.name} className="absolute inset-0 w-full h-full object-cover" />
                                 <div className="absolute top-6 left-1/2 -translate-x-1/2">
                                     <Badge className="text-xl px-4 py-2 bg-green-600 text-white">{topCrop.confidenceScore}% {t("Match")}</Badge>
                                 </div>
                             </div>
-                            <div className="grid w-full max-w-lg grid-cols-3 gap-4 rounded-lg bg-muted/50 p-4">
+
+                            {/* Adjusted background to ensure contrast */}
+                            <div className="grid w-full max-w-lg grid-cols-3 gap-4 rounded-lg bg-white/70 p-4 shadow-md">
                                 <div className="flex flex-col items-center gap-1">
                                     <Thermometer className="h-6 w-6 text-red-500" /><span className="text-sm font-semibold text-muted-foreground">{t("Temperature")}</span><span className="text-lg font-bold">{topCrop.climateSuitability.temperature}</span>
                                 </div>
@@ -235,7 +275,8 @@ export default function Dashboard() {
                                 <h3 className="text-4xl font-bold text-foreground mb-1">{topCrop.name}</h3>
                                 <p className="text-muted-foreground italic text-lg">{topCrop.scientificName}</p>
                                 <p className="text-xl mt-4 leading-relaxed">{topCrop.description}</p>
-                                <div className="space-y-3 p-4 bg-muted/50 rounded-lg mt-8 text-left">
+                                {/* Adjusted background to ensure contrast */}
+                                <div className="space-y-3 p-4 bg-white/70 rounded-lg mt-8 text-left shadow-md">
                                     <h4 className="font-semibold text-xl mb-2">{t("Why this crop is a good fit:")}</h4>
                                     <div className="flex items-center gap-3 text-lg"><CheckCircle2 className="h-6 w-6 text-green-600 flex-shrink-0" /><span>{t("Your local climate is ideal.")}</span></div>
                                     <div className="flex items-center gap-3 text-lg"><CheckCircle2 className="h-6 w-6 text-green-600 flex-shrink-0" /><span>{t("The soil on your farm is very suitable.")}</span></div>
@@ -247,6 +288,8 @@ export default function Dashboard() {
                     )}
                 </CardContent>
             </Card>
+
+
 
             {/* Stats Grid */}
             <div className="grid gap-6 md:grid-cols-2">
