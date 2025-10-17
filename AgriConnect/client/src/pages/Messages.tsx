@@ -103,8 +103,7 @@ export default function Messages() {
     <div className="space-y-6">
       <div>
         <h1 className="font-heading text-4xl font-bold" data-testid="heading-messages">
-          {t("messages")}
-        </h1>
+          {t("Messages")}        </h1>
         <p className="text-muted-foreground mt-2">
           Chat with buyers and sellers
         </p>

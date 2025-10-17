@@ -82,46 +82,11 @@ export default function Analytics() {
       const element = document.getElementById(elementId);
       if (!element) return null;
       
-      // Store original styles
-      const originalDisplay = element.style.display;
-      const originalVisibility = element.style.visibility;
-      const originalPosition = element.style.position;
-      const originalLeft = element.style.left;
-      const originalTop = element.style.top;
-      const originalZIndex = element.style.zIndex;
-      
-      try {
-        // Temporarily make the element visible for capture
-        // But position it off-screen so it doesn't affect the UI
-        element.style.display = 'block';
-        element.style.visibility = 'visible';
-        element.style.position = 'absolute';
-        element.style.left = '-10000px';
-        element.style.top = '-10000px';
-        element.style.zIndex = '10000';
-        
-        // Give the browser a moment to render the element
-        await new Promise(resolve => setTimeout(resolve, 100));
-        
-        const canvas = await html2canvas(element, {
-          scale: 2,
-          backgroundColor: '#ffffff',
-          useCORS: true,
-          allowTaint: true,
-        });
-        return canvas.toDataURL('image/png');
-      } catch (error) {
-        console.error(`Error capturing chart ${elementId}:`, error);
-        return null;
-      } finally {
-        // Restore original styles
-        element.style.display = originalDisplay;
-        element.style.visibility = originalVisibility;
-        element.style.position = originalPosition;
-        element.style.left = originalLeft;
-        element.style.top = originalTop;
-        element.style.zIndex = originalZIndex;
-      }
+      const canvas = await html2canvas(element, {
+        scale: 2,
+        backgroundColor: '#ffffff',
+      });
+      return canvas.toDataURL('image/png');
     };
 
     // Add Title
@@ -333,12 +298,6 @@ export default function Analytics() {
     // Earnings Chart
     const earningsChart = await captureChart('earnings-chart');
     if (earningsChart) {
-      // Check if we need a new page
-      if (yPos > 200) {
-        doc.addPage();
-        yPos = 20;
-      }
-      
       doc.setFontSize(14);
       doc.setFont("helvetica", "bold");
       doc.text(t("Monthly Earnings"), 14, yPos);
@@ -347,15 +306,15 @@ export default function Analytics() {
       yPos += 90;
     }
 
+    // Check if we need a new page
+    if (yPos > 200) {
+      doc.addPage();
+      yPos = 20;
+    }
+
     // Sales Volume Chart
     const salesChart = await captureChart('sales-chart');
     if (salesChart) {
-      // Check if we need a new page
-      if (yPos > 200) {
-        doc.addPage();
-        yPos = 20;
-      }
-      
       doc.setFontSize(14);
       doc.setFont("helvetica", "bold");
       doc.text(t("Monthly Sales Volume"), 14, yPos);
@@ -365,20 +324,18 @@ export default function Analytics() {
     }
 
     // Crop Distribution Chart
+    if (yPos > 200) {
+      doc.addPage();
+      yPos = 20;
+    }
+
     const distributionChart = await captureChart('distribution-chart');
     if (distributionChart) {
-      // Check if we need a new page
-      if (yPos > 200) {
-        doc.addPage();
-        yPos = 20;
-      }
-      
       doc.setFontSize(14);
       doc.setFont("helvetica", "bold");
       doc.text(t("Sales Distribution by Crop"), 14, yPos);
       yPos += 10;
       doc.addImage(distributionChart, 'PNG', 14, yPos, 180, 80);
-      yPos += 90;
     }
 
     // Add footer
@@ -399,8 +356,7 @@ export default function Analytics() {
       <div className="flex items-start justify-between gap-4 flex-wrap">
         <div>
           <h1 className="font-heading text-4xl font-bold" data-testid="heading-analytics">
-            {t("analytics")}
-          </h1>
+            {t("Analytics")}          </h1>
           <p className="text-muted-foreground mt-2">
             {t("Track your sales performance and market trends")}
           </p>
@@ -547,27 +503,24 @@ export default function Analytics() {
               <CardTitle>{t("Sales Distribution by Crop")}</CardTitle>
             </CardHeader>
             <CardContent className="flex justify-center">
-              <div id="distribution-chart">
-                <ResponsiveContainer width="100%" height={350}>
-                  <PieChart>
-                    <Pie
-                      data={cropDistribution}
-                      cx="50%"
-                      cy="50%"
-                      labelLine={false}
-                      label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
-                      outerRadius={120}
-                      fill="#8884d8"
-                      dataKey="value"
-                    >
-                      {cropDistribution.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                      ))}
-                    </Pie>
-                    <Tooltip />
-                  </PieChart>
-                </ResponsiveContainer>
-              </div>
+              <ResponsiveContainer width="100%" height={350}>
+                <PieChart>
+                  <Pie
+                    data={cropDistribution}
+                    cx="50%"
+                    cy="50%"
+                    labelLine={false}
+                    label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                    outerRadius={120}
+                    dataKey="value"
+                  >
+                    {cropDistribution.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                    ))}
+                  </Pie>
+                  <Tooltip />
+                </PieChart>
+              </ResponsiveContainer>
             </CardContent>
           </Card>
         </TabsContent>

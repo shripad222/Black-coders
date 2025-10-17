@@ -36,28 +36,31 @@ export default function Market() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="font-heading text-4xl font-bold" data-testid="heading-market">
-          {t("marketPrices")}
-        </h1>
-        <p className="text-muted-foreground mt-2">
-          Real-time commodity prices from mandis across India
-        </p>
+      <div className="flex items-center gap-4">
+        <TrendingUp className="h-10 w-10 text-primary" />
+        <div>
+          <h1 className="font-heading text-4xl font-bold" data-testid="heading-market">
+            {t("Market Prices")}
+          </h1>
+          <p className="text-muted-foreground mt-2">
+            Stay updated with real-time commodity prices from mandis across India.
+          </p>
+        </div>
       </div>
 
-      <div className="flex flex-col sm:flex-row gap-3">
-        <div className="relative flex-1">
+      <div className="flex flex-col sm:flex-row gap-4 items-center">
+        <div className="relative flex-1 w-full">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <Input
             placeholder="Search commodity or mandi..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-9"
+            className="pl-9 pr-4 py-2 w-full rounded-md border border-input bg-background shadow-sm hover:border-primary focus:border-primary focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
             data-testid="input-search"
           />
         </div>
         <Select value={filterLocation} onValueChange={setFilterLocation}>
-          <SelectTrigger className="w-full sm:w-48" data-testid="select-location">
+          <SelectTrigger className="w-full sm:w-48 h-10" data-testid="select-location">
             <SelectValue placeholder="Filter by location" />
           </SelectTrigger>
           <SelectContent>
@@ -69,28 +72,29 @@ export default function Market() {
             ))}
           </SelectContent>
         </Select>
-        <Button variant="outline" data-testid="button-refresh-prices">
+        <Button variant="outline" className="h-10 px-4 py-2 w-full sm:w-auto" data-testid="button-refresh-prices">
           <TrendingUp className="mr-2 h-4 w-4" />
           Refresh Prices
         </Button>
       </div>
 
       {isLoading ? (
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {Array.from({ length: 9 }).map((_, i) => (
-            <Card key={i}>
-              <CardHeader>
-                <Skeleton className="h-5 w-32" />
-                <Skeleton className="h-4 w-48 mt-2" />
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <Card key={i} className="animate-pulse">
+              <CardHeader className="flex flex-row items-center justify-between pb-2">
+                <Skeleton className="h-6 w-1/2" />
+                <Skeleton className="h-6 w-1/4" />
               </CardHeader>
               <CardContent>
-                <Skeleton className="h-8 w-24" />
+                <Skeleton className="h-10 w-2/3 mb-2" />
+                <Skeleton className="h-4 w-1/2" />
               </CardContent>
             </Card>
           ))}
         </div>
       ) : (
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {filteredPrices?.map((price) => (
             <MarketPriceCard key={price.id} marketPrice={price} />
           ))}
@@ -98,12 +102,14 @@ export default function Market() {
       )}
 
       {!isLoading && filteredPrices?.length === 0 && (
-        <Card>
-          <CardContent className="flex flex-col items-center justify-center py-16">
-            <TrendingUp className="h-16 w-16 text-muted-foreground mb-4" />
-            <h3 className="text-lg font-semibold mb-2">No market prices found</h3>
-            <p className="text-center text-muted-foreground max-w-md">
-              Try adjusting your search or filter to find what you're looking for.
+        <Card className="col-span-full">
+          <CardContent className="flex flex-col items-center justify-center py-16 px-4">
+            <div className="bg-primary/10 rounded-full p-4 mb-6">
+              <Search className="h-12 w-12 text-primary" />
+            </div>
+            <h3 className="text-2xl font-bold mb-3">No market prices found</h3>
+            <p className="text-center text-muted-foreground max-w-md text-lg">
+              We couldn't find any market prices matching your criteria. Try adjusting your search or filters.
             </p>
           </CardContent>
         </Card>
