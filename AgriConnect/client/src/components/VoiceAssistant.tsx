@@ -1,20 +1,150 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Mic, MicOff, Volume2 } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 
+// Extend Window interface for webkitSpeechRecognition
+declare global {
+  interface Window {
+    webkitSpeechRecognition: any;
+  }
+}
+
+const ELEVENLABS_VOICE_ID = "21m00Tcm4TlvDq8ikWAM"; // A generic placeholder voice ID
+
 const VoiceAssistant = () => {
+  const { t, language } = useLanguage();
   const [isListening, setIsListening] = useState(false);
   const [transcript, setTranscript] = useState("");
-  const { t } = useLanguage();
+  const [geminiResponse, setGeminiResponse] = useState("");
+  const [manualInput, setManualInput] = useState(""); // State for manual text input
+  const recognitionRef = useRef<any>(null);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  useEffect(() => {
+    if (!("SpeechRecognition" in window) && !("webkitSpeechRecognition" in window)) {
+      console.warn("Speech Recognition API not supported in this browser.");
+      return;
+    }
+
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    recognitionRef.current = new SpeechRecognition();
+    recognitionRef.current.continuous = false; // Listen for a single utterance
+    recognitionRef.current.interimResults = false; // Only return final results
+    recognitionRef.current.lang = language; // Set language for recognition
+
+    recognitionRef.current.onstart = () => {
+      setIsListening(true);
+      setTranscript(t("🎤 I'm listening..."));
+      setGeminiResponse("");
+    };
+
+    recognitionRef.current.onresult = (event: any) => {
+      const currentTranscript = event.results[0][0].transcript;
+      setTranscript(currentTranscript);
+      processCommand(currentTranscript);
+    };
+
+    recognitionRef.current.onerror = (event: any) => {
+      console.error("Speech recognition error:", event.error);
+      setIsListening(false);
+      setTranscript(t("Error listening. Please try again."));
+    };
+
+    recognitionRef.current.onend = () => {
+      setIsListening(false);
+      if (!geminiResponse) {
+        setTranscript(t("Press mic to start speaking"));
+      }
+    };
+
+    return () => {
+      if (recognitionRef.current) {
+        recognitionRef.current.stop();
+      }
+    };
+  }, [language]); // Re-initialize if language changes
+
+  const processCommand = async (command: string) => {
+    setTranscript(t("Processing..."));
+    try {
+      const response = await fetch("/api/gemini-process", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text: command, language: language }),
+      });
+      const data = await response.json();
+      if (response.ok) {
+        setGeminiResponse(data.response);
+        speakResponse(data.response);
+      } else {
+        console.error("Gemini API error:", data.error);
+        setGeminiResponse(t("Error processing your request."));
+        speakResponse(t("Error processing your request."));
+      }
+    } catch (error) {
+      console.error("Network error during Gemini processing:", error);
+      setGeminiResponse(t("Network error. Please try again."));
+      speakResponse(t("Network error. Please try again."));
+    }
+  };
+
+  const speakResponse = async (text: string) => {
+    try {
+      const response = await fetch("/api/elevenlabs-tts", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text: text, voice_id: ELEVENLABS_VOICE_ID, language: language }),
+      });
+
+      if (response.ok) {
+        const audioBlob = await response.blob();
+        const audioUrl = URL.createObjectURL(audioBlob);
+
+        if (audioRef.current) {
+          audioRef.current.pause();
+          audioRef.current.src = audioUrl;
+          audioRef.current.play();
+        } else {
+          audioRef.current = new Audio(audioUrl);
+          audioRef.current.play();
+        }
+        audioRef.current.onended = () => {
+          setIsListening(false);
+          setTranscript(t("Press mic to start speaking"));
+          URL.revokeObjectURL(audioUrl); // Clean up the Object URL
+        };
+      } else {
+        const errorData = await response.json();
+        console.error("Eleven Labs TTS API error:", errorData.error);
+        // Fallback to native speech if Eleven Labs fails
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = language;
+        window.speechSynthesis.speak(utterance);
+        utterance.onend = () => {
+          setIsListening(false);
+          setTranscript(t("Press mic to start speaking"));
+        };
+      }
+    } catch (error) {
+      console.error("Network error during Eleven Labs TTS:", error);
+      // Fallback to native speech if network fails
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = language;
+      window.speechSynthesis.speak(utterance);
+      utterance.onend = () => {
+        setIsListening(false);
+        setTranscript(t("Press mic to start speaking"));
+      };
+    }
+  };
 
   const toggleListening = () => {
-    setIsListening(!isListening);
-    if (!isListening) {
-      setTranscript(t("I'm listening... How can I help?"));
+    if (isListening) {
+      recognitionRef.current.stop();
     } else {
-      setTranscript("");
+      recognitionRef.current.start();
     }
   };
 
@@ -66,6 +196,17 @@ const VoiceAssistant = () => {
                 </button>
               </div>
 
+              {/* Manual Text Input for Debugging */}
+              <div className="flex gap-2 mt-4">
+                <Input
+                  placeholder={t("Type your query here...")}
+                  value={manualInput}
+                  onChange={(e) => setManualInput(e.target.value)}
+                  onKeyPress={(e) => e.key === "Enter" && processCommand(manualInput)}
+                />
+                <Button onClick={() => processCommand(manualInput)}>{t("Send")}</Button>
+              </div>
+
               {/* Status Text */}
               <div className="text-center">
                 {isListening ? (
@@ -89,6 +230,16 @@ const VoiceAssistant = () => {
                 </div>
               )}
 
+              {/* Gemini Response Display */}
+              {geminiResponse && (
+                <div className="bg-primary/10 rounded-lg p-4 min-h-[100px] animate-fade-in mt-4">
+                  <div className="flex items-start gap-3">
+                    <Volume2 className="h-5 w-5 text-primary mt-1 flex-shrink-0" />
+                    <p className="text-left font-medium">{geminiResponse}</p>
+                  </div>
+                </div>
+              )}
+
               {/* Example Queries */}
               <div className="space-y-3">
                 <p className="text-sm font-medium text-muted-foreground">{t("Example Questions:")}</p>
@@ -96,21 +247,21 @@ const VoiceAssistant = () => {
                   <Button 
                     variant="outline" 
                     className="justify-start text-left h-auto py-3 hover:bg-accent/10"
-                    onClick={() => setTranscript(t("What is the price of tomatoes today?"))}
+                    onClick={() => processCommand(t("What is the price of tomatoes today?"))}
                   >
                     {t("What is the price of tomatoes today?")}
                   </Button>
                   <Button 
                     variant="outline" 
                     className="justify-start text-left h-auto py-3 hover:bg-accent/10"
-                    onClick={() => setTranscript(t("Register my new crop"))}
+                    onClick={() => processCommand(t("Register my new crop"))}
                   >
                     {t("Register my new crop")}
                   </Button>
                   <Button 
                     variant="outline" 
                     className="justify-start text-left h-auto py-3 hover:bg-accent/10"
-                    onClick={() => setTranscript(t("Who are the buyers in Goa?"))}
+                    onClick={() => processCommand(t("Who are the buyers in Goa?"))}
                   >
                     {t("Who are the buyers in Goa?")}
                   </Button>

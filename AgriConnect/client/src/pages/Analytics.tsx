@@ -29,6 +29,10 @@ import {
   ResponsiveContainer,
 } from "recharts";
 
+import jsPDF from "jspdf";
+import autoTable from 'jspdf-autotable';
+import html2canvas from 'html2canvas';
+
 const COLORS = ['hsl(var(--chart-1))', 'hsl(var(--chart-2))', 'hsl(var(--chart-3))', 'hsl(var(--chart-4))', 'hsl(var(--chart-5))'];
 
 export default function Analytics() {
@@ -64,6 +68,224 @@ export default function Analytics() {
     { month: "Jun", sales: 32 },
   ];
 
+  const handleExportReport = async () => {
+    if (!salesHistory || salesHistory.length === 0) {
+      alert(t("No sales history data to export."));
+      return;
+    }
+
+    const doc = new jsPDF();
+    let yPos = 22;
+
+    // Add Title
+    doc.setFontSize(22);
+    doc.setFont("helvetica", "bold");
+    doc.text(t("AgriMandi Analytics Report"), 105, yPos, { align: "center" });
+    yPos += 15;
+
+    // Add Report Generation Date
+    doc.setFontSize(10);
+    doc.setFont("helvetica", "normal");
+    doc.text(`Generated on: ${new Date().toLocaleDateString()}`, 105, yPos, { align: "center" });
+    yPos += 15;
+
+    // Add Summary Cards
+    doc.setFontSize(14);
+    doc.setFont("helvetica", "bold");
+    doc.text(t("Performance Summary"), 14, yPos);
+    yPos += 10;
+
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(10);
+    doc.text(`${t("Total Revenue")}: Rs. 1,17,950`, 14, yPos);
+    doc.text(`${t("Total Sales")}: 139`, 70, yPos);
+    doc.text(`${t("Avg. Sale Value")}: Rs. 8,485`, 120, yPos);
+    yPos += 10;
+
+    // Sales History
+    doc.setFontSize(14);
+    doc.setFont("helvetica", "bold");
+    doc.text(t("Sales History"), 14, yPos);
+    yPos += 10;
+
+    if (salesHistory && salesHistory.length > 0) {
+      const salesHeaders = [[t("Date"), t("Crop"), t("Buyer"), t("Quantity"), t("Amount")]];
+      const salesData = salesHistory.map(sale => [
+        new Date(sale.saleDate).toLocaleDateString(),
+        sale.cropName,
+        sale.buyerName,
+        `${sale.quantity} ${sale.unit}`,
+        `Rs. ${Number(sale.totalAmount).toLocaleString('en-IN', {maximumFractionDigits: 2})}`,
+      ]);
+
+      autoTable(doc, {
+        startY: yPos,
+        head: [salesHeaders[0]],
+        body: salesData,
+        theme: 'grid',
+        headStyles: { 
+          fillColor: [22, 163, 74], 
+          textColor: [255, 255, 255],
+          fontSize: 10,
+          fontStyle: 'bold'
+        },
+        styles: { 
+          font: 'helvetica', 
+          fontSize: 9, 
+          cellPadding: 4, 
+          textColor: [0, 0, 0] 
+        },
+        columnStyles: { 
+          0: { cellWidth: 25 },
+          1: { cellWidth: 30 },
+          2: { cellWidth: 40 },
+          3: { cellWidth: 25 },
+          4: { cellWidth: 35, halign: 'right' }
+        },
+      });
+      yPos = (doc as any).lastAutoTable.finalY + 15;
+    } else {
+      doc.setFontSize(12);
+      doc.text(t("No sales history data available."), 14, yPos);
+      yPos += 10;
+    }
+
+    // Monthly Earnings
+    doc.setFontSize(14);
+    doc.setFont("helvetica", "bold");
+    doc.text(t("Monthly Earnings"), 14, yPos);
+    yPos += 10;
+
+    if (earningsData && earningsData.length > 0) {
+      const earningsHeaders = [[t("Month"), t("Earnings")]];
+      const earningsTableData = earningsData.map(item => [
+        t(item.month),
+        `Rs. ${Number(item.earnings).toLocaleString('en-IN', {maximumFractionDigits: 2})}`,
+      ]);
+      autoTable(doc, {
+        startY: yPos,
+        head: [earningsHeaders[0]],
+        body: earningsTableData,
+        theme: 'grid',
+        headStyles: { 
+          fillColor: [22, 163, 74], 
+          textColor: [255, 255, 255],
+          fontSize: 10,
+          fontStyle: 'bold'
+        },
+        styles: { 
+          font: 'helvetica', 
+          fontSize: 9, 
+          cellPadding: 4, 
+          textColor: [0, 0, 0] 
+        },
+        columnStyles: { 
+          0: { cellWidth: 80 },
+          1: { cellWidth: 75, halign: 'right' }
+        },
+      });
+      yPos = (doc as any).lastAutoTable.finalY + 15;
+    } else {
+      doc.setFontSize(12);
+      doc.text(t("No monthly earnings data available."), 14, yPos);
+      yPos += 10;
+    }
+
+    // Monthly Sales Volume
+    doc.setFontSize(14);
+    doc.setFont("helvetica", "bold");
+    doc.text(t("Monthly Sales Volume"), 14, yPos);
+    yPos += 10;
+
+    if (monthlySales && monthlySales.length > 0) {
+      const salesVolumeHeaders = [[t("Month"), t("Sales Count")]];
+      const salesVolumeData = monthlySales.map(item => [
+        t(item.month),
+        item.sales.toString(),
+      ]);
+      autoTable(doc, {
+        startY: yPos,
+        head: [salesVolumeHeaders[0]],
+        body: salesVolumeData,
+        theme: 'grid',
+        headStyles: { 
+          fillColor: [22, 163, 74], 
+          textColor: [255, 255, 255],
+          fontSize: 10,
+          fontStyle: 'bold'
+        },
+        styles: { 
+          font: 'helvetica', 
+          fontSize: 9, 
+          cellPadding: 4, 
+          textColor: [0, 0, 0] 
+        },
+        columnStyles: { 
+          0: { cellWidth: 80 },
+          1: { cellWidth: 75, halign: 'right' }
+        },
+      });
+      yPos = (doc as any).lastAutoTable.finalY + 15;
+    } else {
+      doc.setFontSize(12);
+      doc.text(t("No monthly sales volume data available."), 14, yPos);
+      yPos += 10;
+    }
+
+    // Crop Distribution
+    doc.setFontSize(14);
+    doc.setFont("helvetica", "bold");
+    doc.text(t("Crop Distribution"), 14, yPos);
+    yPos += 10;
+
+    if (cropDistribution && cropDistribution.length > 0) {
+      const cropHeaders = [[t("Crop"), t("Percentage")]];
+      const cropData = cropDistribution.map(item => [
+        t(item.name),
+        `${item.value}%`,
+      ]);
+      autoTable(doc, {
+        startY: yPos,
+        head: [cropHeaders[0]],
+        body: cropData,
+        theme: 'grid',
+        headStyles: { 
+          fillColor: [22, 163, 74], 
+          textColor: [255, 255, 255],
+          fontSize: 10,
+          fontStyle: 'bold'
+        },
+        styles: { 
+          font: 'helvetica', 
+          fontSize: 9, 
+          cellPadding: 4, 
+          textColor: [0, 0, 0] 
+        },
+        columnStyles: { 
+          0: { cellWidth: 80 },
+          1: { cellWidth: 75, halign: 'right' }
+        },
+      });
+      yPos = (doc as any).lastAutoTable.finalY + 15;
+    } else {
+      doc.setFontSize(12);
+      doc.text(t("No crop distribution data available."), 14, yPos);
+      yPos += 10;
+    }
+
+    // Add footer
+    const pageCount = doc.getNumberOfPages();
+    for (let i = 1; i <= pageCount; i++) {
+      doc.setPage(i);
+      doc.setFontSize(10);
+      doc.setFont("helvetica", "normal");
+      doc.text(`Page ${i} of ${pageCount}`, doc.internal.pageSize.width / 2, doc.internal.pageSize.height - 10, { align: 'center' });
+      doc.text("AgriMandi Analytics Report", 20, doc.internal.pageSize.height - 15);
+    }
+
+    doc.save("analytics_report.pdf");
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex items-start justify-between gap-4 flex-wrap">
@@ -87,7 +309,7 @@ export default function Analytics() {
               <SelectItem value="1year">{t("Last Year")}</SelectItem>
             </SelectContent>
           </Select>
-          <Button variant="outline" data-testid="button-export-report">
+          <Button variant="outline" data-testid="button-export-report" onClick={handleExportReport}>
             <Download className="mr-2 h-4 w-4" />
             {t("Export Report")}
           </Button>

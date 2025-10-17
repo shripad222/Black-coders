@@ -37,6 +37,11 @@ app.use((req, res, next) => {
 });
 
 (async () => {
+  // WARNING: Hardcoding API keys is a security risk and should be avoided in production.
+  // For demonstration purposes only.
+  process.env.GEMINI_API_KEY = "AIzaSyCiZQDUcLFviLqyYgvCIVuYHrmCLuAdWkE";
+  process.env.ELEVENLABS_API_KEY = "sk_6f5c9d06eda23cab48dd65f5e89f1aff4a5dd377576dcc88";
+
   const server = await registerRoutes(app);
 
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
