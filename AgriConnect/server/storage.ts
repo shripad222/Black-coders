@@ -271,6 +271,48 @@ export class MemStorage implements IStorage {
       this.buyerRequirements.set(id, { id, ...req });
     });
 
+    // --- Sales History ---
+    const salesHistoryData: Omit<SalesHistory, "id">[] = [
+      {
+        farmerId: "farmer-1",
+        cropName: "Wheat",
+        quantity: 50,
+        unit: "quintal",
+        pricePerUnit: "2850.00",
+        totalAmount: "142500.00",
+        buyerName: "Rajesh Wholesale",
+        location: "Ludhiana, Punjab",
+        saleDate: new Date("2024-06-15"),
+      },
+      {
+        farmerId: "farmer-1",
+        cropName: "Rice",
+        quantity: 30,
+        unit: "quintal",
+        pricePerUnit: "2930.00",
+        totalAmount: "87900.00",
+        buyerName: "Priya Traders",
+        location: "Amritsar, Punjab",
+        saleDate: new Date("2024-06-10"),
+      },
+      {
+        farmerId: "farmer-1",
+        cropName: "Sugarcane",
+        quantity: 100,
+        unit: "quintal",
+        pricePerUnit: "3150.00",
+        totalAmount: "315000.00",
+        buyerName: "Kumar Mills",
+        location: "Bhatinda, Punjab",
+        saleDate: new Date("2024-06-05"),
+      },
+    ];
+
+    salesHistoryData.forEach((sale) => {
+      const id = randomUUID();
+      this.salesHistory.set(id, { id, ...sale });
+    });
+
     // --- Recommendations ---
     const recommendationsData: Omit<Recommendation, "id">[] = [
       {

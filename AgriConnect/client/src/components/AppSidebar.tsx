@@ -20,37 +20,37 @@ export function AppSidebar() {
 
   const menuItems = [
     {
-      title: t("dashboard"),
+      title: t("Dashboard"),
       url: "/dashboard",
       icon: Home,
       testId: "nav-dashboard",
     },
     {
-      title: t("market"),
+      title: t("Market"),
       url: "/dashboard/market",
       icon: TrendingUp,
       testId: "nav-market",
     },
     {
-      title: t("marketplace"),
+      title: t("Marketplace"),
       url: "/dashboard/marketplace",
       icon: ShoppingBag,
       testId: "nav-marketplace",
     },
     {
-      title: t("messages"),
+      title: t("Messages"),
       url: "/dashboard/messages",
       icon: MessageSquare,
       testId: "nav-messages",
     },
     {
-      title: t("analytics"),
+      title: t("Analytics"),
       url: "/dashboard/analytics",
       icon: BarChart3,
       testId: "nav-analytics",
     },
     {
-      title: t("profile"),
+      title: t("Profile"),
       url: "/dashboard/profile",
       icon: User,
       testId: "nav-profile",

@@ -114,8 +114,7 @@ export default function Profile() {
     <div className="space-y-6 max-w-3xl mx-auto">
       <div className="flex items-center justify-between">
         <h1 className="font-heading text-4xl font-bold" data-testid="heading-profile">
-          {t("profile")}
-        </h1>
+          {t("Profile")}        </h1>
         <Button
           variant={isEditing ? "default" : "outline"}
           onClick={() => {

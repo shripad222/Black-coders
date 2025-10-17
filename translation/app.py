@@ -23,15 +23,16 @@ app.add_middleware(
 
 # ✅ Language mapping (short code to Flores-200 format)
 LANG_MAP = {
+    "en": "eng_Latn",
     "hi": "hin_Deva",
     "ta": "tam_Taml",
     "te": "tel_Telu",
+    "kn": "kan_Knda",
+    "mr": "mar_Deva",
     "bn": "ben_Beng",
+    "gu": "guj_Gujr",
     "ml": "mal_Mlym",
     "kok": "gom_Deva",  # Konkani
-    "mr": "mar_Deva",   # Marathi
-    "gu": "guj_Gujr",   # Gujarati
-    "kn": "kan_Knda",   # Kannada
     "pa": "pan_Guru",   # Punjabi
     "or": "ory_Orya",   # Odia
     "as": "asm_Beng",   # Assamese

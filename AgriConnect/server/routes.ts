@@ -247,6 +247,87 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // New endpoint for Gemini text processing
+  app.post("/api/gemini-process", async (req, res) => {
+    try {
+      const { text, language } = req.body;
+      const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
+
+      if (!GEMINI_API_KEY) {
+        return res.status(500).json({ error: "Gemini API key not configured." });
+      }
+
+      const geminiResponse = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${GEMINI_API_KEY}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            contents: [{ parts: [{ text: text }] }],
+          }),
+        }
+      );
+
+      if (!geminiResponse.ok) {
+        const errorData = await geminiResponse.json();
+        console.error("Gemini API error:", errorData);
+        return res.status(geminiResponse.status).json({ error: "Failed to get response from Gemini API." });
+      }
+
+      const geminiData = await geminiResponse.json();
+      const generatedText = geminiData.candidates[0].content.parts[0].text;
+
+      res.json({ response: generatedText });
+    } catch (error) {
+      console.error("Error processing Gemini request:", error);
+      res.status(500).json({ error: "Failed to process Gemini request" });
+    }
+  });
+
+  // New endpoint for Eleven Labs text-to-speech
+  app.post("/api/elevenlabs-tts", async (req, res) => {
+    try {
+      const { text, voice_id, language } = req.body;
+      const ELEVENLABS_API_KEY = process.env.ELEVENLABS_API_KEY;
+
+      if (!ELEVENLABS_API_KEY) {
+        return res.status(500).json({ error: "Eleven Labs API key not configured." });
+      }
+
+      const elevenLabsResponse = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${voice_id}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "xi-api-key": ELEVENLABS_API_KEY,
+          },
+          body: JSON.stringify({
+            text: text,
+            model_id: "eleven_multilingual_v2", // Using a multilingual model
+            voice_settings: {
+              stability: 0.5,
+              similarity_boost: 0.75,
+            },
+          }),
+        }
+      );
+
+      if (!elevenLabsResponse.ok) {
+        const errorData = await elevenLabsResponse.json();
+        console.error("Eleven Labs TTS API error:", errorData);
+        return res.status(elevenLabsResponse.status).json({ error: "Failed to get audio from Eleven Labs API." });
+      }
+
+      // Forward the audio stream to the client
+      res.setHeader("Content-Type", "audio/mpeg");
+      elevenLabsResponse.body?.pipe(res);
+    } catch (error) {
+      console.error("Error processing Eleven Labs TTS request:", error);
+      res.status(500).json({ error: "Failed to process Eleven Labs TTS request" });
+    }
+  });
+
   const httpServer = createServer(app);
 
   const wss = new WebSocketServer({ server: httpServer, path: '/ws' });
