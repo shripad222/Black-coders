@@ -4,7 +4,7 @@ import { User } from '@supabase/supabase-js';
 
 interface AuthContextType {
   user: User | null;
-  signUp: (email: string, password: string, name: string, state: string, district: string) => Promise<any>;
+  signUp: (email: string, password: string, name: string, state: string, district: string | null, latitude?: number, longitude?: number, cropPlanted?: string, preferredLanguage?: string) => Promise<any>;
   signIn: (email: string, password: string) => Promise<any>;
   signOut: () => Promise<void>;
   resendConfirmationEmail: (email: string) => Promise<any>;
@@ -40,7 +40,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     getInitialSession();
   }, []);
 
-  const signUp = async (email: string, password: string, name: string, state: string, district: string) => {
+  const signUp = async (email: string, password: string, name: string, state: string, district: string | null, latitude?: number, longitude?: number, cropPlanted?: string, preferredLanguage?: string) => {
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
@@ -48,7 +48,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         data: {
           name,
           state,
-          district
+          district: district || null, // district can be null now
+          latitude,
+          longitude,
+          crop_planted: cropPlanted,
+          preferred_language: preferredLanguage
         },
         emailRedirectTo: `${window.location.origin}/dashboard`
       }

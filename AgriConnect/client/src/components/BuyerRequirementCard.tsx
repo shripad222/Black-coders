@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { MapPin, Phone } from "lucide-react";
 import { BuyerRequirement } from "@shared/schema";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 interface BuyerRequirementCardProps {
   requirement: BuyerRequirement;
@@ -10,6 +11,7 @@ interface BuyerRequirementCardProps {
 }
 
 export function BuyerRequirementCard({ requirement, onMakeOffer }: BuyerRequirementCardProps) {
+  const { t } = useLanguage();
   return (
     <Card className="hover-elevate" data-testid={`buyer-requirement-${requirement.id}`}>
       <CardHeader className="space-y-2">
@@ -19,7 +21,7 @@ export function BuyerRequirementCard({ requirement, onMakeOffer }: BuyerRequirem
           </CardTitle>
           {requirement.active && (
             <Badge variant="outline" className="bg-chart-2/10 text-chart-2 border-chart-2/20">
-              Active
+              {t("Active")}
             </Badge>
           )}
         </div>
@@ -30,18 +32,18 @@ export function BuyerRequirementCard({ requirement, onMakeOffer }: BuyerRequirem
       </CardHeader>
       <CardContent className="space-y-3">
         <div>
-          <p className="text-sm text-muted-foreground mb-1">Looking for:</p>
+          <p className="text-sm text-muted-foreground mb-1">{t("Looking for:")}</p>
           <p className="font-semibold text-base" data-testid="text-crop-needed">{requirement.cropNeeded}</p>
         </div>
         <div>
-          <p className="text-sm text-muted-foreground mb-1">Quantity needed:</p>
+          <p className="text-sm text-muted-foreground mb-1">{t("Quantity needed:")}</p>
           <p className="font-medium" data-testid="text-quantity">
             {requirement.quantity} {requirement.unit}
           </p>
         </div>
         {(requirement.expectedPriceMin || requirement.expectedPriceMax) && (
           <div>
-            <p className="text-sm text-muted-foreground mb-1">Expected price:</p>
+            <p className="text-sm text-muted-foreground mb-1">{t("Expected price:")}</p>
             <p className="font-medium tabular-nums" data-testid="text-price-range">
               ₹{requirement.expectedPriceMin ? Number(requirement.expectedPriceMin).toFixed(2) : '—'} - 
               ₹{requirement.expectedPriceMax ? Number(requirement.expectedPriceMax).toFixed(2) : '—'} /{requirement.unit}
@@ -63,7 +65,7 @@ export function BuyerRequirementCard({ requirement, onMakeOffer }: BuyerRequirem
           onClick={() => onMakeOffer(requirement.id)}
           data-testid="button-make-offer"
         >
-          Make an Offer
+          {t("Make an Offer")}
         </Button>
       </CardFooter>
     </Card>

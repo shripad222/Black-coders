@@ -7,10 +7,19 @@ const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYm
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 // Helper function to upsert user profile after registration
-export const upsertUserProfile = async (userId: string, email: string, name: string, state: string, district: string) => {
+export const upsertUserProfile = async (userId: string, email: string, name: string, state: string, latitude?: number, longitude?: number, cropPlanted?: string, preferredLanguage?: string) => {
   const { error } = await supabase
     .from('profiles')
-    .upsert([{ id: userId, email, name, state, district }], { onConflict: 'id' });
+    .upsert([{ 
+      id: userId, 
+      email, 
+      name, 
+      state, 
+      latitude,
+      longitude,
+      crop_planted: cropPlanted,
+      preferred_language: preferredLanguage
+    }], { onConflict: 'id' });
 
   if (error) {
     console.error('Error upserting user profile:', error);
