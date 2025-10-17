@@ -77,6 +77,53 @@ export default function Analytics() {
     const doc = new jsPDF();
     let yPos = 22;
 
+    // Helper function to capture chart as image
+    const captureChart = async (elementId: string) => {
+      const element = document.getElementById(elementId);
+      if (!element) return null;
+      
+      // Store original styles
+      const originalDisplay = element.style.display;
+      const originalVisibility = element.style.visibility;
+      const originalPosition = element.style.position;
+      const originalLeft = element.style.left;
+      const originalTop = element.style.top;
+      const originalZIndex = element.style.zIndex;
+      
+      try {
+        // Temporarily make the element visible for capture
+        // But position it off-screen so it doesn't affect the UI
+        element.style.display = 'block';
+        element.style.visibility = 'visible';
+        element.style.position = 'absolute';
+        element.style.left = '-10000px';
+        element.style.top = '-10000px';
+        element.style.zIndex = '10000';
+        
+        // Give the browser a moment to render the element
+        await new Promise(resolve => setTimeout(resolve, 100));
+        
+        const canvas = await html2canvas(element, {
+          scale: 2,
+          backgroundColor: '#ffffff',
+          useCORS: true,
+          allowTaint: true,
+        });
+        return canvas.toDataURL('image/png');
+      } catch (error) {
+        console.error(`Error capturing chart ${elementId}:`, error);
+        return null;
+      } finally {
+        // Restore original styles
+        element.style.display = originalDisplay;
+        element.style.visibility = originalVisibility;
+        element.style.position = originalPosition;
+        element.style.left = originalLeft;
+        element.style.top = originalTop;
+        element.style.zIndex = originalZIndex;
+      }
+    };
+
     // Add Title
     doc.setFontSize(22);
     doc.setFont("helvetica", "bold");
@@ -273,6 +320,67 @@ export default function Analytics() {
       yPos += 10;
     }
 
+    // Add page break for charts
+    doc.addPage();
+    yPos = 20;
+
+    // Capture and add charts
+    doc.setFontSize(18);
+    doc.setFont("helvetica", "bold");
+    doc.text(t("Visual Analytics"), 105, yPos, { align: "center" });
+    yPos += 15;
+
+    // Earnings Chart
+    const earningsChart = await captureChart('earnings-chart');
+    if (earningsChart) {
+      // Check if we need a new page
+      if (yPos > 200) {
+        doc.addPage();
+        yPos = 20;
+      }
+      
+      doc.setFontSize(14);
+      doc.setFont("helvetica", "bold");
+      doc.text(t("Monthly Earnings"), 14, yPos);
+      yPos += 10;
+      doc.addImage(earningsChart, 'PNG', 14, yPos, 180, 80);
+      yPos += 90;
+    }
+
+    // Sales Volume Chart
+    const salesChart = await captureChart('sales-chart');
+    if (salesChart) {
+      // Check if we need a new page
+      if (yPos > 200) {
+        doc.addPage();
+        yPos = 20;
+      }
+      
+      doc.setFontSize(14);
+      doc.setFont("helvetica", "bold");
+      doc.text(t("Monthly Sales Volume"), 14, yPos);
+      yPos += 10;
+      doc.addImage(salesChart, 'PNG', 14, yPos, 180, 80);
+      yPos += 90;
+    }
+
+    // Crop Distribution Chart
+    const distributionChart = await captureChart('distribution-chart');
+    if (distributionChart) {
+      // Check if we need a new page
+      if (yPos > 200) {
+        doc.addPage();
+        yPos = 20;
+      }
+      
+      doc.setFontSize(14);
+      doc.setFont("helvetica", "bold");
+      doc.text(t("Sales Distribution by Crop"), 14, yPos);
+      yPos += 10;
+      doc.addImage(distributionChart, 'PNG', 14, yPos, 180, 80);
+      yPos += 90;
+    }
+
     // Add footer
     const pageCount = doc.getNumberOfPages();
     for (let i = 1; i <= pageCount; i++) {
@@ -376,29 +484,31 @@ export default function Analytics() {
               <CardTitle>{t("Monthly Earnings")}</CardTitle>
             </CardHeader>
             <CardContent>
-              <ResponsiveContainer width="100%" height={350}>
-                <LineChart data={earningsData}>
-                  <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
-                  <XAxis dataKey="month" className="text-xs" />
-                  <YAxis className="text-xs" />
-                  <Tooltip
-                    contentStyle={{
-                      backgroundColor: 'hsl(var(--card))',
-                      border: '1px solid hsl(var(--border))',
-                      borderRadius: '6px',
-                    }}
-                  />
-                  <Legend />
-                  <Line
-                    type="monotone"
-                    dataKey="earnings"
-                    stroke="hsl(var(--chart-1))"
-                    strokeWidth={2}
-                    dot={{ fill: 'hsl(var(--chart-1))' }}
-                    name="Earnings (₹)"
-                  />
-                </LineChart>
-              </ResponsiveContainer>
+              <div id="earnings-chart">
+                <ResponsiveContainer width="100%" height={350}>
+                  <LineChart data={earningsData}>
+                    <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
+                    <XAxis dataKey="month" className="text-xs" />
+                    <YAxis className="text-xs" />
+                    <Tooltip
+                      contentStyle={{
+                        backgroundColor: 'hsl(var(--card))',
+                        border: '1px solid hsl(var(--border))',
+                        borderRadius: '6px',
+                      }}
+                    />
+                    <Legend />
+                    <Line
+                      type="monotone"
+                      dataKey="earnings"
+                      stroke="hsl(var(--chart-1))"
+                      strokeWidth={2}
+                      dot={{ fill: 'hsl(var(--chart-1))' }}
+                      name="Earnings (₹)"
+                    />
+                  </LineChart>
+                </ResponsiveContainer>
+              </div>
             </CardContent>
           </Card>
         </TabsContent>
@@ -409,22 +519,24 @@ export default function Analytics() {
               <CardTitle>{t("Monthly Sales Volume")}</CardTitle>
             </CardHeader>
             <CardContent>
-              <ResponsiveContainer width="100%" height={350}>
-                <BarChart data={monthlySales}>
-                  <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
-                  <XAxis dataKey="month" className="text-xs" />
-                  <YAxis className="text-xs" />
-                  <Tooltip
-                    contentStyle={{
-                      backgroundColor: 'hsl(var(--card))',
-                      border: '1px solid hsl(var(--border))',
-                      borderRadius: '6px',
-                    }}
-                  />
-                  <Legend />
-                  <Bar dataKey="sales" fill="hsl(var(--chart-2))" name="Sales Count" />
-                </BarChart>
-              </ResponsiveContainer>
+              <div id="sales-chart">
+                <ResponsiveContainer width="100%" height={350}>
+                  <BarChart data={monthlySales}>
+                    <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
+                    <XAxis dataKey="month" className="text-xs" />
+                    <YAxis className="text-xs" />
+                    <Tooltip
+                      contentStyle={{
+                        backgroundColor: 'hsl(var(--card))',
+                        border: '1px solid hsl(var(--border))',
+                        borderRadius: '6px',
+                      }}
+                    />
+                    <Legend />
+                    <Bar dataKey="sales" fill="hsl(var(--chart-2))" name="Sales Count" />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
             </CardContent>
           </Card>
         </TabsContent>
@@ -435,25 +547,27 @@ export default function Analytics() {
               <CardTitle>{t("Sales Distribution by Crop")}</CardTitle>
             </CardHeader>
             <CardContent className="flex justify-center">
-              <ResponsiveContainer width="100%" height={350}>
-                <PieChart>
-                  <Pie
-                    data={cropDistribution}
-                    cx="50%"
-                    cy="50%"
-                    labelLine={false}
-                    label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
-                    outerRadius={120}
-                    fill="#8884d8"
-                    dataKey="value"
-                  >
-                    {cropDistribution.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                    ))}
-                  </Pie>
-                  <Tooltip />
-                </PieChart>
-              </ResponsiveContainer>
+              <div id="distribution-chart">
+                <ResponsiveContainer width="100%" height={350}>
+                  <PieChart>
+                    <Pie
+                      data={cropDistribution}
+                      cx="50%"
+                      cy="50%"
+                      labelLine={false}
+                      label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                      outerRadius={120}
+                      fill="#8884d8"
+                      dataKey="value"
+                    >
+                      {cropDistribution.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                      ))}
+                    </Pie>
+                    <Tooltip />
+                  </PieChart>
+                </ResponsiveContainer>
+              </div>
             </CardContent>
           </Card>
         </TabsContent>
