@@ -8,10 +8,12 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { useQuery } from "@tanstack/react-query";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useAuth } from "@/contexts/AuthContext";
-import { getUserProfile } from "@/utils/supabase";
+import { getUserProfile , supabase} from "@/utils/supabase";
 import { useEffect, useState } from "react";
+
 // 💡 Import axios for API calls
 import axios from 'axios';
+
 
 import BackgroundVideo from '@/utils/BackgroundLines.mp4';
 
@@ -60,7 +62,9 @@ export default function Dashboard() {
     const [isVoiceActive, setIsVoiceActive] = useState(false);
     const [analysisState, setAnalysisState] = useState<'initial' | 'loading' | 'results'>('initial');
     const [loadingText, setLoadingText] = useState('Preparing analysis...');
-    let recomended= "rice"
+    let [recomended,setRecomended]= useState<string>("rice");
+    const [coordinates, setCoordinates] = useState<{ lat: number; lon: number } | null>(null);
+    const[dis , setDis] = useState<string>("");
 
 
     // Mock data (You would replace these mock values with actual data fetched from your system)
@@ -70,12 +74,61 @@ export default function Dashboard() {
         rainfall: "Light Rain",
         season: "Monsoon"
     };
+    useEffect(() => {
+        if (recomended && recomended !== 'rice' || dis === '') { // Run when recomended changes from initial or description is empty
+            prompt(recomended);
+        }
+    }, [recomended]);
 
-    const topCrop: TopCrop = {
+    async function prompt(name:string) {
+
+
+
+        const response = await fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent", {
+            method: 'POST',
+            headers: {
+                // Note: The curl command uses 'x-goog-api-key', but for direct fetch,
+                // often a standard Authorization header or query parameter is used,
+                // though 'x-goog-api-key' works for this specific API structure.
+                'x-goog-api-key': "AIzaSyBYpYrwKlYwJQtVkGLz8PSmdcW3pp1hJvs",
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                contents: [
+                    {
+                        parts: [
+                            {
+                                text: `Tell 2 sentences about growing ${name}`, // The prompt
+                            },
+                        ],
+                    },
+                ],
+            }),
+        });
+
+        if (!response.ok) {
+            const errorBody = await response.json();
+            throw new Error(`API call failed: ${response.status} - ${errorBody.error?.message || 'Unknown error'}`);
+        }
+
+        const data = await response.json();
+
+        // Extract the generated text from the response structure
+        const generatedText = data.candidates?.[0]?.content?.parts?.[0]?.text || 'No explanation found.';
+
+        setDis(generatedText);
+
+
+
+
+    }
+
+
+    let topCrop: TopCrop = {
         name: recomended,
-        imageUrl: "https://images.unsplash.com/photo-1585320806297-9794b3e4eeae?w=400&h=300&fit=crop&crop=center",
+        imageUrl: `https://otmdfoghamvmmwjwzpxw.supabase.co/storage/v1/object/public/images/${recomended}.png`,
         confidenceScore: 95,
-        description: "A perfect match for coastal Goa. Coconuts have high economic value from oil, tourism, and copra.",
+        description: dis,
         climateSuitability: {
             temperature: "25-30°C",
             rainfall: "High Tolerance",
@@ -83,22 +136,6 @@ export default function Dashboard() {
         }
     };
 
-    const otherCrops: OtherCrop[] = [
-        {
-            name: "Cashew",
-            imageUrl: "https://images.unsplash.com/photo-1609501676725-7186f496903b?w=300&h=200&fit=crop&crop=center",
-            confidenceScore: 85,
-            description: "Excellent secondary crop with good export potential."
-        },
-        {
-            name: "Rice (Kharif)",
-            imageUrl: "https://images.unsplash.com/photo-1536431311719-398b6704d4cc?w=300&h=200&fit=crop&crop=center",
-            confidenceScore: 78,
-            description: "A staple crop that is very suitable for local paddy fields."
-        }
-    ];
-
-    // Fetch user profile
     useEffect(() => {
         const fetchUserProfile = async () => {
             if (user?.id) {
@@ -117,20 +154,63 @@ export default function Dashboard() {
     const { data: marketPrices, isLoading: pricesLoading } = useQuery<MarketPrice[]>({
         queryKey: ["/api/market-prices"],
     });
+    const getLatLonFromLocation = async (location: string) => {
+        // 💡 Replace 'YOUR_GEOCODING_API_KEY' and the URL with a real service's details.
+        // For a production app, use an environmental variable for the key.
+        const GEOCODING_API_KEY = "AIzaSyAcjLnyzV6OrLSggmffQkdDInXlHUxFUiw";
+        const GEOCODING_API_URL = "https://api.geocodingservice.com/v1/geocode";
 
+        try {
+            const response = await axios.get(GEOCODING_API_URL, {
+                params: {
+                    q: location, // The location string, e.g., "Panaji, Goa"
+                    apiKey: GEOCODING_API_KEY,
+                }
+            });
+
+            // Assuming the API returns an array of results with 'lat' and 'lon'
+            if (response.data && response.data.results && response.data.results.length > 0) {
+                const result = response.data.results[0];
+                return {
+                    latitude: result.lat,
+                    longitude: result.lon,
+                };
+            }
+
+            // Fallback if no results are found
+            return {
+                latitude: 15.4989, // Default to Panaji, Goa
+                longitude: 73.8278, // Default to Panaji, Goa
+            };
+
+        } catch (error) {
+            console.error("Error fetching geocoding data:", error);
+            // Fallback in case of API error
+            return {
+                latitude: 15.4989, // Default to Panaji, Goa
+                longitude: 73.8278, // Default to Panaji, Goa
+            };
+        }
+    };
     // 💡 NEW FUNCTION: API Call
+    // 💡 UPDATED FUNCTION: API Call
     const sendPredictionRequest = async () => {
-        // 💡 DEBUG: Added this line. If you don't see this in the console, the function isn't running!
         console.log("--- Starting Crop Prediction Request ---");
 
-        let latitude = 15.4989;
-        let longitude = 73.8278;
+        // 1. Fetch coordinates dynamically
+        setLoadingText("Determining farm coordinates...");
+        const coords = await getLatLonFromLocation(locationData.location);
+        setCoordinates(coords); // Save for potential display or later use
+
+        const latitude = coords.latitude;
+        const longitude = coords.longitude;
+
         const apiUrl = "http://192.168.1.74:8000/predict";
 
-        // Request body object
+        // 2. Use the fetched coordinates in the request body
         const requestBody = {
-            "lat": latitude, // Example Lat for Panaji, Goa
-            "lon": longitude, // Example Lon for Panaji, Goa
+            "lat": latitude,
+            "lon": longitude,
             "capital": 2000000,
             "land_area": 2.5,
             "N": 90,
@@ -141,33 +221,28 @@ export default function Dashboard() {
             "end_offset_days": 15
         };
 
+        // ... (rest of the try/catch block remains the same, using fetch)
         try {
-            // 1. Make the POST request using fetch
             const response = await fetch(apiUrl, {
                 method: 'POST',
                 headers: {
-                    // Must specify that the request body is JSON
                     'Content-Type': 'application/json'
                 },
-                // Must stringify the JavaScript object for the request body
                 body: JSON.stringify(requestBody)
             });
 
-            // 2. Check if the HTTP status code indicates success (200-299)
             if (!response.ok) {
-                // If the status is an error (e.g., 404, 500), throw an error to enter the catch block
                 throw new Error(`HTTP error! Status: ${response.status}`);
             }
 
             const data = await response.json();
+            setRecomended(data.recommended_crop);
 
-            recomended = data.recommended_crop;
 
-
-        } catch (error) {
-            console.error("Error fetching prediction:", error);
-            // Display a user-friendly error message
-            alert(`Failed to get crop prediction from the server: ${error.message}`);
+        }
+        catch (error) {
+            console.error('Error sending prediction request:', error);
+            // Optionally set a friendly error message for the user
         }
     };
 
