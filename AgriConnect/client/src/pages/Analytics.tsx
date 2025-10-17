@@ -72,24 +72,24 @@ export default function Analytics() {
             {t("analytics")}
           </h1>
           <p className="text-muted-foreground mt-2">
-            Track your sales performance and market trends
+            {t("Track your sales performance and market trends")}
           </p>
         </div>
         <div className="flex gap-2">
           <Select defaultValue="6months">
             <SelectTrigger className="w-40" data-testid="select-time-range">
-              <SelectValue />
+              <SelectValue placeholder={t("Select time range")} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="1month">Last Month</SelectItem>
-              <SelectItem value="3months">Last 3 Months</SelectItem>
-              <SelectItem value="6months">Last 6 Months</SelectItem>
-              <SelectItem value="1year">Last Year</SelectItem>
+              <SelectItem value="1month">{t("Last Month")}</SelectItem>
+              <SelectItem value="3months">{t("Last 3 Months")}</SelectItem>
+              <SelectItem value="6months">{t("Last 6 Months")}</SelectItem>
+              <SelectItem value="1year">{t("Last Year")}</SelectItem>
             </SelectContent>
           </Select>
           <Button variant="outline" data-testid="button-export-report">
             <Download className="mr-2 h-4 w-4" />
-            Export Report
+            {t("Export Report")}
           </Button>
         </div>
       </div>
@@ -97,7 +97,7 @@ export default function Analytics() {
       <div className="grid gap-4 md:grid-cols-3">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between gap-2 space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Total Revenue</CardTitle>
+            <CardTitle className="text-sm font-medium text-muted-foreground">{t("Total Revenue")}</CardTitle>
             <div className="flex h-9 w-9 items-center justify-center rounded-md bg-chart-3/10">
               <IndianRupee className="h-5 w-5 text-chart-3" />
             </div>
@@ -105,14 +105,14 @@ export default function Analytics() {
           <CardContent>
             <div className="text-3xl font-bold tabular-nums" data-testid="text-total-revenue">₹1,17,950</div>
             <p className="text-sm text-chart-3 font-medium mt-1">
-              +24.5% from last period
+              {t("+24.5% from last period")}
             </p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between gap-2 space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Total Sales</CardTitle>
+            <CardTitle className="text-sm font-medium text-muted-foreground">{t("Total Sales")}</CardTitle>
             <div className="flex h-9 w-9 items-center justify-center rounded-md bg-chart-1/10">
               <Package className="h-5 w-5 text-chart-1" />
             </div>
@@ -120,14 +120,14 @@ export default function Analytics() {
           <CardContent>
             <div className="text-3xl font-bold tabular-nums" data-testid="text-total-sales">139</div>
             <p className="text-sm text-chart-3 font-medium mt-1">
-              +12 from last period
+              {t("+12 from last period")}
             </p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between gap-2 space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Avg. Sale Value</CardTitle>
+            <CardTitle className="text-sm font-medium text-muted-foreground">{t("Avg. Sale Value")}</CardTitle>
             <div className="flex h-9 w-9 items-center justify-center rounded-md bg-chart-2/10">
               <BarChart3 className="h-5 w-5 text-chart-2" />
             </div>
@@ -135,7 +135,7 @@ export default function Analytics() {
           <CardContent>
             <div className="text-3xl font-bold tabular-nums" data-testid="text-avg-sale">₹8,485</div>
             <p className="text-sm text-chart-3 font-medium mt-1">
-              +8.2% from last period
+              {t("+8.2% from last period")}
             </p>
           </CardContent>
         </Card>
@@ -143,15 +143,15 @@ export default function Analytics() {
 
       <Tabs defaultValue="earnings" className="w-full">
         <TabsList>
-          <TabsTrigger value="earnings" data-testid="tab-earnings">Earnings Trend</TabsTrigger>
-          <TabsTrigger value="sales" data-testid="tab-sales">Sales Volume</TabsTrigger>
-          <TabsTrigger value="distribution" data-testid="tab-distribution">Crop Distribution</TabsTrigger>
+          <TabsTrigger value="earnings" data-testid="tab-earnings">{t("Earnings Trend")}</TabsTrigger>
+          <TabsTrigger value="sales" data-testid="tab-sales">{t("Sales Volume")}</TabsTrigger>
+          <TabsTrigger value="distribution" data-testid="tab-distribution">{t("Crop Distribution")}</TabsTrigger>
         </TabsList>
 
         <TabsContent value="earnings" className="mt-6">
           <Card>
             <CardHeader>
-              <CardTitle>Monthly Earnings</CardTitle>
+              <CardTitle>{t("Monthly Earnings")}</CardTitle>
             </CardHeader>
             <CardContent>
               <ResponsiveContainer width="100%" height={350}>
@@ -184,7 +184,7 @@ export default function Analytics() {
         <TabsContent value="sales" className="mt-6">
           <Card>
             <CardHeader>
-              <CardTitle>Monthly Sales Volume</CardTitle>
+              <CardTitle>{t("Monthly Sales Volume")}</CardTitle>
             </CardHeader>
             <CardContent>
               <ResponsiveContainer width="100%" height={350}>
@@ -210,7 +210,7 @@ export default function Analytics() {
         <TabsContent value="distribution" className="mt-6">
           <Card>
             <CardHeader>
-              <CardTitle>Sales Distribution by Crop</CardTitle>
+              <CardTitle>{t("Sales Distribution by Crop")}</CardTitle>
             </CardHeader>
             <CardContent className="flex justify-center">
               <ResponsiveContainer width="100%" height={350}>
@@ -260,11 +260,11 @@ export default function Analytics() {
               <table className="w-full">
                 <thead>
                   <tr className="border-b bg-muted/50">
-                    <th className="p-3 text-left text-sm font-medium">Date</th>
-                    <th className="p-3 text-left text-sm font-medium">Crop</th>
-                    <th className="p-3 text-left text-sm font-medium">Buyer</th>
-                    <th className="p-3 text-left text-sm font-medium">Quantity</th>
-                    <th className="p-3 text-left text-sm font-medium">Amount</th>
+                    <th className="p-3 text-left text-sm font-medium">{t("Date")}</th>
+                    <th className="p-3 text-left text-sm font-medium">{t("Crop")}</th>
+                    <th className="p-3 text-left text-sm font-medium">{t("Buyer")}</th>
+                    <th className="p-3 text-left text-sm font-medium">{t("Quantity")}</th>
+                    <th className="p-3 text-left text-sm font-medium">{t("Amount")}</th>
                   </tr>
                 </thead>
                 <tbody>

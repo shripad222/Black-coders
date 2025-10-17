@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { MapPin, Package } from "lucide-react";
 import { ProduceListing } from "@shared/schema";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 interface ProduceListingCardProps {
   listing: ProduceListing;
@@ -10,6 +11,7 @@ interface ProduceListingCardProps {
 }
 
 export function ProduceListingCard({ listing, onContact }: ProduceListingCardProps) {
+  const { t } = useLanguage();
   return (
     <Card className="overflow-visible" data-testid={`produce-listing-${listing.id}`}>
       <div className="aspect-square w-full overflow-hidden bg-muted rounded-t-md">
@@ -32,7 +34,7 @@ export function ProduceListingCard({ listing, onContact }: ProduceListingCardPro
           </CardTitle>
           {listing.available && (
             <Badge variant="outline" className="bg-chart-3/10 text-chart-3 border-chart-3/20">
-              Available
+              {t("Available")}
             </Badge>
           )}
         </div>
@@ -49,7 +51,7 @@ export function ProduceListingCard({ listing, onContact }: ProduceListingCardPro
           <span className="text-sm text-muted-foreground">/{listing.unit}</span>
         </div>
         <div className="text-sm">
-          <span className="text-muted-foreground">Quantity: </span>
+          <span className="text-muted-foreground">{t("Quantity:")} </span>
           <span className="font-medium" data-testid="text-quantity">
             {listing.quantity} {listing.unit}
           </span>
@@ -64,7 +66,7 @@ export function ProduceListingCard({ listing, onContact }: ProduceListingCardPro
           onClick={() => onContact(listing.id)}
           data-testid="button-contact-seller"
         >
-          Contact Seller
+          {t("Contact Seller")}
         </Button>
       </CardFooter>
     </Card>

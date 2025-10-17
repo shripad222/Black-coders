@@ -5,34 +5,35 @@ import { Input } from "@/components/ui/input";
 import MarketChart from "@/components/MarketChart";
 import { useLanguage } from "@/contexts/LanguageContext";
 
-const marketData = [
-  { crop: "Tomato", price: "$2.50/kg", change: 8.5, market: "Mapusa Mandi", trend: "up" },
-  { crop: "Onion", price: "$1.25/kg", change: -3.2, market: "Nashik", trend: "down" },
-  { crop: "Wheat", price: "$25/quintal", change: 5.1, market: "Pune", trend: "up" },
-  { crop: "Chilli", price: "$4.25/kg", change: 12.3, market: "Belgaum", trend: "up" },
-  { crop: "Leafy Vegetables", price: "$0.90/kg", change: -1.5, market: "Panjim", trend: "down" },
-  { crop: "Rice", price: "$35/quintal", change: 2.8, market: "Ratnagiri", trend: "up" },
-];
+  const mockMarketData = [
+    { crop: "Tomato", price: "₹2500/quintal", change: 8.5, market: "Mapusa Mandi", trend: "up" },
+    { crop: "Onion", price: "₹1250/quintal", change: -3.2, market: "Nashik", trend: "down" },
+    { crop: "Wheat", price: "₹2850/quintal", change: 5.1, market: "Pune", trend: "up" },
+    { crop: "Chilli", price: "₹4250/quintal", change: 12.3, market: "Belgaum", trend: "up" },
+    { crop: "Leafy Vegetables", price: "₹900/quintal", change: -1.5, market: "Panjim", trend: "down" },
+    { crop: "Rice", price: "₹3200/quintal", change: 2.8, market: "Ratnagiri", trend: "up" },
+  ];
 
 const MarketDashboard = () => {
   const { t } = useLanguage();
 
   return (
-    <section id="market" className="py-16 bg-gradient-to-b from-background to-muted/20">
-      <div className="container">
-        <div className="text-center mb-12 space-y-4">
-          <h2 className="text-3xl md:text-4xl font-bold">
-            <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-              {t("Today's Market Prices")}
-            </span>
-          </h2>
-          <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-            {t("View real-time mandi prices and trends. Search using voice!")}
-          </p>
-        </div>
+    <section id="market" className="py-16">
+      <div className="w-full bg-background">
+        <div className="container py-16 px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12 space-y-4">
+            <h2 className="text-3xl md:text-4xl font-bold">
+              <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+                {t("Today's Market Prices")}
+              </span>
+            </h2>
+            <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
+              {t("View real-time mandi prices and trends. Search using voice!")}
+            </p>
+          </div>
 
-        {/* Search Bar */}
-        <div className="max-w-xl mx-auto mb-12">
+          {/* Search Bar */}
+          <div className="max-w-xl mx-auto mb-12">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
             <Input 
@@ -44,7 +45,7 @@ const MarketDashboard = () => {
 
         {/* Market Cards Grid */}
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {marketData.map((item, idx) => (
+          {mockMarketData.map((item, idx) => (
             <Card 
               key={idx}
               className="hover:shadow-[var(--shadow-soft)] transition-all duration-300 hover:-translate-y-1 animate-fade-in"
@@ -86,13 +87,14 @@ const MarketDashboard = () => {
             <span className="text-sm font-medium">{t("Live Updates")}</span>
           </div>
           <div className="text-sm text-muted-foreground animate-marquee">
-            {t("🌾 Wheat prices up in Pune by $5/quintal • 🌶️ Chilli demand high in Belgaum • 🧅 Onion export news from Nashik • 🍅 Tomato season peak in Goa")}
+            {t("🌾 Wheat prices up in Pune by ₹5/quintal • 🌶️ Chilli demand high in Belgaum • 🧅 Onion export news from Nashik • 🍅 Tomato season peak in Goa")}
           </div>
         </div>
 
         {/* Price History Chart */}
         <MarketChart />
       </div>
+    </div>
     </section>
   );
 };

@@ -11,31 +11,34 @@ const listings = [
     id: 1,
     farmer: "Rajendra Patil",
     crop: "Tomato",
-    quantity: "500 kg",
+    quantity: "5 quintal",
     quality: "A Grade",
     location: "Mapusa, Goa",
-    price: "$2.50/kg",
+    price: "₹2500/quintal",
     verified: true,
+    imageUrl: "https://wpcdn.web.wsu.edu/news/uploads/sites/2797/2019/02/wheat-1188x792.jpg",
   },
   {
     id: 2,
     farmer: "Sunita Deshmukh",
     crop: "Chilli",
-    quantity: "200 kg",
+    quantity: "2 quintal",
     quality: "Premium",
     location: "Belgaum",
-    price: "$4.25/kg",
+    price: "₹15000/quintal",
     verified: true,
+    imageUrl: "https://wpcdn.web.wsu.edu/news/uploads/sites/2797/2019/02/wheat-1188x792.jpg",
   },
   {
     id: 3,
     farmer: "Vikas Kulkarni",
     crop: "Onion",
-    quantity: "1000 kg",
+    quantity: "10 quintal",
     quality: "B Grade",
     location: "Nashik",
-    price: "$1.25/kg",
+    price: "₹3000/quintal",
     verified: true,
+    imageUrl: "https://wpcdn.web.wsu.edu/news/uploads/sites/2797/2019/02/wheat-1188x792.jpg",
   },
 ];
 
@@ -50,18 +53,19 @@ const MarketplacePreview = () => {
   };
 
   return (
-    <section id="marketplace" className="py-16 bg-background">
-      <div className="container">
-        <div className="text-center mb-12 space-y-4">
-          <h2 className="text-3xl md:text-4xl font-bold">
-            <span className="bg-gradient-to-r from-secondary to-primary bg-clip-text text-transparent">
-              {t("Today's Marketplace")}
-            </span>
-          </h2>
-          <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-            {t("Buy directly from farmers. Sell your produce.")}
-          </p>
-        </div>
+    <section id="marketplace" className="py-16">
+      <div className="w-full bg-background">
+        <div className="container py-16 px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12 space-y-4">
+            <h2 className="text-3xl md:text-4xl font-bold">
+              <span className="bg-gradient-to-r from-secondary to-primary bg-clip-text text-transparent">
+                {t("Today's Marketplace")}
+              </span>
+            </h2>
+            <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
+              {t("Buy directly from farmers. Sell your produce.")}
+            </p>
+          </div>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
           {listings.map((listing, idx) => (
@@ -142,6 +146,7 @@ const MarketplacePreview = () => {
           />
         )}
       </div>
+    </div>
     </section>
   );
 };
