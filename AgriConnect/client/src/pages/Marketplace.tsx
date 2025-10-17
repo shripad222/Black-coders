@@ -39,7 +39,7 @@ export default function Marketplace() {
             {t("marketplace")}
           </h1>
           <p className="text-muted-foreground mt-2">
-            Connect directly with buyers and sellers
+            {t("Connect directly with buyers and sellers")}
           </p>
         </div>
         <Button data-testid="button-add-new-listing">
@@ -91,13 +91,13 @@ export default function Marketplace() {
             <Card>
               <CardContent className="flex flex-col items-center justify-center py-16">
                 <Package className="h-16 w-16 text-muted-foreground mb-4" />
-                <h3 className="text-lg font-semibold mb-2">No produce listings yet</h3>
+                <h3 className="text-lg font-semibold mb-2">{t("No produce listings yet")}</h3>
                 <p className="text-center text-muted-foreground max-w-md mb-4">
-                  Start selling your produce by creating your first listing
+                  {t("Start selling your produce by creating your first listing")}
                 </p>
                 <Button data-testid="button-create-first-listing">
                   <Plus className="mr-2 h-4 w-4" />
-                  {t("addListing")}
+                  {t("Create Your First Listing")}
                 </Button>
               </CardContent>
             </Card>
@@ -138,9 +138,9 @@ export default function Marketplace() {
             <Card>
               <CardContent className="flex flex-col items-center justify-center py-16">
                 <ShoppingBag className="h-16 w-16 text-muted-foreground mb-4" />
-                <h3 className="text-lg font-semibold mb-2">No buyer requirements available</h3>
+                <h3 className="text-lg font-semibold mb-2">{t("No buyer requirements available")}</h3>
                 <p className="text-center text-muted-foreground max-w-md">
-                  Check back later for new opportunities from buyers
+                  {t("Check back later for new opportunities from buyers")}
                 </p>
               </CardContent>
             </Card>

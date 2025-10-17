@@ -21,7 +21,7 @@ const Hero = () => {
             </div>
             
             <h1 className="text-4xl md:text-6xl font-bold leading-tight">
-              <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent animate-pulse">
                 {t("Connecting Farmers.")}
               </span>
               <br />
